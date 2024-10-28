@@ -1,1 +1,1 @@
-rootProject.name = "spring-thymeleaf-coroutines"
+rootProject.name = "Spring-Thymeleaf-Coroutines"
