@@ -31,8 +31,8 @@ configurations.matching { it.name == "detekt" }.all {
 detekt {
     toolVersion = "1.23.7"
     config.setFrom(file("config/detekt/detekt.yml"))
-    autoCorrect = true
     buildUponDefaultConfig = true
+    autoCorrect = true
 }
 
 dependencies {
