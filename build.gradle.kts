@@ -53,6 +53,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 kotlin {
@@ -64,3 +65,4 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+

@@ -26,7 +26,7 @@ class MovieRepositoryIntegrationTest {
     }
 
     @Test
-    fun `when saving movie, given entity, then saved with not null id`() = runTest {
+    fun `when saving movie, given entity, then saved id is not null`() = runTest {
         // Given
         val entity = _entity.copy(imdbID = "test123")
 

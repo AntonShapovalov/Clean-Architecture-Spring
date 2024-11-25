@@ -1,17 +1,20 @@
 package concept.stc
 
+import concept.stc.config.OmdbApiConfigProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 
 /**
  * Application entry point.
  */
 @SpringBootApplication
-class SpringThymeleafCoroutinesApplication
+@EnableConfigurationProperties(OmdbApiConfigProperties::class)
+class STCApplication
 
 /**
  * Application entry point.
  */
 fun main(args: Array<String>) {
-    runApplication<SpringThymeleafCoroutinesApplication>(args = args)
+    runApplication<STCApplication>(args = args)
 }
