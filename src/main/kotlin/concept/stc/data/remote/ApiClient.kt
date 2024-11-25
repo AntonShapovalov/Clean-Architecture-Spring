@@ -8,14 +8,14 @@ import org.springframework.web.reactive.function.client.WebClient
 /**
  * Api client for external API.
  *
- * @param configProperties the API config properties.
+ * @param properties the API config properties.
  */
 @Component
 class ApiClient(
-    private val configProperties: OmdbApiConfigProperties
+    private val properties: OmdbApiConfigProperties
 ) {
 
-    private val webClient = WebClient.create(configProperties.baseUrl)
+    private val webClient = WebClient.create(properties.baseUrl)
 
     /**
      * Get movies list from the external API.
@@ -24,7 +24,7 @@ class ApiClient(
      */
     suspend fun getMovies(query: String) {
         webClient.get()
-            .uri("/?apikey={apiKey}&s={query}", configProperties.apiKey, query)
+            .uri("/?apikey={apiKey}&s={query}", properties.apiKey, query)
             .retrieve()
             .bodyToMono(String::class.java)
             .awaitFirst()

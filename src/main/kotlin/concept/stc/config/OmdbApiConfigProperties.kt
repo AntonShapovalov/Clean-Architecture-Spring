@@ -11,5 +11,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "omdb")
 data class OmdbApiConfigProperties(
     val baseUrl: String,
-    val apiKey: String
+    val apiKey: String = "" // be sure that "secrets.properties" contains the api key
 )
