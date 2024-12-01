@@ -1,6 +1,6 @@
 package concept.stc
 
-import concept.stc.config.OmdbApiConfigProperties
+import concept.stc.config.OmdbApiProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
@@ -9,7 +9,7 @@ import org.springframework.boot.runApplication
  * Application entry point.
  */
 @SpringBootApplication
-@EnableConfigurationProperties(OmdbApiConfigProperties::class)
+@EnableConfigurationProperties(OmdbApiProperties::class)
 class STCApplication
 
 /**

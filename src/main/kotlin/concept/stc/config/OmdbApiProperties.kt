@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * @property apiKey the api key.
  */
 @ConfigurationProperties(prefix = "omdb")
-data class OmdbApiConfigProperties(
+data class OmdbApiProperties(
     val baseUrl: String,
     val apiKey: String = "" // be sure that "secrets.properties" contains the api key
 )

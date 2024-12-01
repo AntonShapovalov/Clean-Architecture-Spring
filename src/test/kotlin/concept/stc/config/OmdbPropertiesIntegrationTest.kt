@@ -7,10 +7,10 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class OmdbApiConfigIntegrationTest {
+class OmdbPropertiesIntegrationTest {
 
     @Autowired
-    private lateinit var properties: OmdbApiConfigProperties
+    private lateinit var properties: OmdbApiProperties
 
     @Test
     fun `when getting properties, given config, then values are not empty`() {
