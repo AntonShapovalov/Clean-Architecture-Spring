@@ -1,6 +1,7 @@
 package concept.stc.data.remote
 
 import concept.stc.config.OmdbApiProperties
+import concept.stc.data.remote.model.SearchResponse
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -22,9 +23,9 @@ class ApiClient(
      *
      * @param query the search query.
      */
-    suspend fun getMovies(query: String): String = webClient.get()
+    suspend fun search(query: String): SearchResponse = webClient.get()
         .uri("/?apikey={apiKey}&s={query}", properties.apiKey, query)
         .retrieve()
-        .bodyToMono(String::class.java)
+        .bodyToMono(SearchResponse::class.java)
         .awaitFirst()
 }
