@@ -16,6 +16,6 @@ class OmdbPropertiesIntegrationTest {
     fun `when getting properties, given config, then values are not empty`() {
         assertTrue(properties.baseUrl.isNotEmpty())
         // Be sure that "secrets.properties" contains the api key
-        // assertTrue(configProperties.apiKey.isNotEmpty())
+        // assertTrue(properties.apiKey.isNotEmpty())
     }
 }
