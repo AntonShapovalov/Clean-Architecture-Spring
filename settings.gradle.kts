@@ -1,1 +1,1 @@
-rootProject.name = "Spring-Kotlin-Coroutines"
+rootProject.name = "Clean-Architecture"
