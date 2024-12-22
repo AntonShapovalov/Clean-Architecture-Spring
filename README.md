@@ -24,7 +24,7 @@ Spring provides predefined components for three main layers: data, domain, and p
 * The data layer provides and manages data, acting as a single source of truth. This ensures data consistency and unidirectional data flow.
 
 #### Presentation Layer's Role
-* The view layer primarily focus on presenting data to the user and passing events to the data layer. It also observes data streams to update the UI as needed. This separation of concerns helps to keep the presentation layer clean and focused. In Spring Boot.
+* The view layer primarily focus on presenting data to the user and passing events to the data layer. It also observes data streams to update the UI as needed. This separation of concerns helps to keep the presentation layer clean and focused.
 
 #### Single Responsibility Principle
 * Each layer and class has a well-defined purpose and structure. Data layer only provides data, domain layer applies data transformations and presentation layer only displays data. This makes the code easier to understand, maintain, and extend.
