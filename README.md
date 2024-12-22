@@ -18,7 +18,7 @@ Spring provides predefined components for three main layers: data, domain, and p
 * This is a core principle of clean architecture. The domain layer encapsulates the core business rules and logic, independent of any external frameworks or technologies. This makes it easier to test and maintain. 
 
 #### Unit Testability
-* The absence of external dependencies in the domain layer makes it easier to write unit test that quickly and reliably verify the correctness of the business logic.
+* The absence of external dependencies in the domain layer makes it easier to write unit tests that quickly and reliably verify the correctness of the business logic.
 
 #### Data Layer as a Single Source of Truth
 * The data layer provides and manages data, acting as a single source of truth. This ensures data consistency and unidirectional data flow.
