@@ -6,12 +6,12 @@ import concept.stc.data.remote.model.SearchResponse.Movie
 /**
  * The search response of the external OMDB API.
  *
- * @param search the list of [Movie].
+ * @param movies the list of [Movie].
  * @param totalResults the total count of result.
  * @param response the boolean flag indicates response is successful or not.
  */
 data class SearchResponse(
-    @get:JsonProperty("Search") val search: List<Movie>,
+    @get:JsonProperty("Search") val movies: List<Movie>,
     @get:JsonProperty("totalResults") val totalResults: Int,
     @get:JsonProperty("Response") val response: String
 ) {
