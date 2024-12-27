@@ -46,12 +46,17 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("io.r2dbc:r2dbc-h2")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test"){
+        exclude(module = "mockito-core")
+    }
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.wiremock.integrations:wiremock-spring-boot:3.2.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

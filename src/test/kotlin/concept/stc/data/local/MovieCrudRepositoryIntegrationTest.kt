@@ -15,10 +15,10 @@ import kotlin.test.assertNotNull
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class MovieRepositoryIntegrationTest {
+class MovieCrudRepositoryIntegrationTest {
 
     @Autowired
-    private lateinit var repository: MovieRepository
+    private lateinit var repository: MovieCrudRepository
 
     @AfterTest
     fun cleanUp() {
@@ -36,6 +36,20 @@ class MovieRepositoryIntegrationTest {
         // Then
         assertNotNull(saved.id)
         assertEquals("test123", saved.imdbID)
+    }
+
+    @Test
+    fun `when getting movie by IMDb ID, given entity, then result is not null`() = runTest {
+        // Given
+        val entity = _entity.copy(imdbID = "test123")
+        repository.save(entity)
+
+        // When
+        val result = repository.getMovieByImdbId("test123")
+
+        // Then
+        assertNotNull(result)
+        assertEquals("test123", result.imdbID)
     }
 
     private val _entity = MovieEntity(

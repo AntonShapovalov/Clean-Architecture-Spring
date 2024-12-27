@@ -1,12 +1,10 @@
 package concept.stc.data
 
-import concept.stc.data.local.MovieRepository
-import concept.stc.data.mapper.toDomain
+import concept.stc.coroutines.DispatchersProvider
+import concept.stc.data.local.MovieCrudRepository
 import concept.stc.data.mapper.toEntity
 import concept.stc.data.remote.ApiClient
-import concept.stc.domain.model.Movie
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 
 /**
@@ -16,23 +14,29 @@ import org.springframework.stereotype.Service
  *
  * @param apiClient the API client.
  * @param repository the CRUD movie repository.
+ * @param dispatchers the dispatcher provider.
  */
 @Service
 class ApiService(
     private val apiClient: ApiClient,
-    private val repository: MovieRepository
+    private val repository: MovieCrudRepository,
+    private val dispatchers: DispatchersProvider
 ) {
 
     /**
      * Load movies from the external API and save them to the database.
      *
      * @param title the movie title.
-     *
-     * @return the movie flow that emits the saved movies.
      */
-    suspend fun loadMovies(title: String): Flow<Movie> {
-        val movies = apiClient.search(title).movies
-        val entities = movies.map { movie -> movie.toEntity() }
-        return repository.saveAll(entities).map { entity -> entity.toDomain() }
+    suspend fun loadMovies(title: String) {
+        withContext(dispatchers.io) {
+            val movies = apiClient.search(title).movies
+            for (movie in movies) {
+                val entity = repository.getMovieByImdbId(movie.imdbID)
+                if (entity == null) {
+                    repository.save(movie.toEntity())
+                }
+            }
+        }
     }
 }
