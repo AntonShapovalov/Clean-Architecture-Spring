@@ -21,8 +21,9 @@ class ApiServiceTest {
 
     private val apiClient = mockk<ApiClient>()
     private val repository = mockk<MovieCrudRepository>()
+    private val testDispatcher = UnconfinedTestDispatcher()
     private val dispatchers = mockk<DispatchersProvider> {
-        coEvery { io } returns UnconfinedTestDispatcher()
+        coEvery { io } returns testDispatcher
     }
 
     private val service = ApiService(apiClient, repository, dispatchers)
@@ -37,18 +38,17 @@ class ApiServiceTest {
         // Given
         val movie = _movie.copy(imdbID = "testId")
         val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val entity = movie.toEntity()
 
-        coEvery { apiClient.search(any()) } returns searchResponse
-        coEvery { repository.getMovieByImdbId(any()) } returns null
-        coEvery { repository.save(any()) } returns movie.toEntity()
+        coEvery { apiClient.search("test") } returns searchResponse
+        coEvery { repository.getMovieByImdbId("testId") } returns null
+        coEvery { repository.save(entity) } returns entity
 
         // When
         service.loadMovies("test")
 
         // Then
-        coVerify { apiClient.search("test") }
-        coVerify { repository.getMovieByImdbId("testId") }
-        coVerify { repository.save(movie.toEntity()) }
+        coVerify { repository.save(entity) }
     }
 
     @Test
@@ -56,18 +56,16 @@ class ApiServiceTest {
         // Given
         val movie = _movie.copy(imdbID = "testId")
         val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val entity = movie.toEntity()
 
-        coEvery { apiClient.search(any()) } returns searchResponse
-        coEvery { repository.getMovieByImdbId(any()) } returns movie.toEntity()
-        coEvery { repository.save(any()) } returns movie.toEntity()
+        coEvery { apiClient.search("test") } returns searchResponse
+        coEvery { repository.getMovieByImdbId("testId") } returns entity
 
         // When
         service.loadMovies("test")
 
         // Then
-        coVerify { apiClient.search("test") }
-        coVerify { repository.getMovieByImdbId("testId") }
-        coVerify { repository.save(movie.toEntity()) wasNot Called }
+        coVerify { repository.save(entity) wasNot Called }
     }
 
     private val _movie = SearchResponse.Movie(
