@@ -11,10 +11,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.wiremock.spring.EnableWireMock
 import kotlin.test.assertEquals
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @EnableWireMock
 class ApiClientIntegrationTest {
 
