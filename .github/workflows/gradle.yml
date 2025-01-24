@@ -19,22 +19,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build detekt
+      - name: Create secrets.properties
+        run: echo "omdb.api-key=${{ secrets.OMDB_API_KEY }}" > src/main/resources/secrets.properties
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build detekt
+
+      - name: Move JAR to release directory
+        run: mv -f build/libs/*SNAPSHOT.jar release/app-release.jar
+
+      - name: Commit and push JAR to release directory
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add app-release.jar' release/app-release.jar
+          git push origin master

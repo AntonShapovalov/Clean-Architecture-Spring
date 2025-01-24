@@ -3,7 +3,7 @@ package concept.stc.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
- * Config definition for Open Movie Database (OMDB) API properties.
+ * Config properties for Open Movie Database (OMDB) API.
  *
  * @property baseUrl the api base url.
  * @property apiKey the api key.
