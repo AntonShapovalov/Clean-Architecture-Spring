@@ -6,7 +6,10 @@ The project demonstrates `how to` use Spring Boot, Clean Architecture and Kotlin
 > App is going to search movies using external [OMDB API](https://www.omdbapi.com).
 
 ### Install and run
-The recommended way to get started with the project is to use [Docker](https://docs.docker.com/get-started/get-docker/):
+The recommended way to get started with the project is to use [Docker](https://docs.docker.com/get-started/get-docker/).
+Also is possible to run the application using command line or IDE.
+
+#### Docker
 * Clone the repository
 * Build the image:
 ```shell
@@ -18,6 +21,7 @@ docker run -p 8080:8080 clean-architecture-spring
 ```
 * Open the browser and navigate to [http://localhost:8080](http://localhost:8080)
 
+#### Command line or IDE
 An alternative way is to run the application using command line:
 ```shell
 java -jar release/app-release.jar
