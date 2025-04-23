@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 /**
  * Data service to manage API operations.
- * In opposite to the domain service, that operates with pure domain models,
+ * In opposite to the domain service that operates with pure domain models,
  * this service operates with "raw" data, as API response and database entities.
  *
  * @param apiClient the API client.

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 /**
  * Provides coroutines dispatchers.
- * This class allows to replace background dispatchers for unit and integration testing.
+ * This class allows replacing background dispatchers for unit and integration testing.
  */
 @Component
 class DispatchersProvider {

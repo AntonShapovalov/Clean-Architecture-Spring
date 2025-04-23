@@ -5,7 +5,8 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 /**
- * Repository to manage database operations for [MovieEntity].
+ * CRUD repository to manage database operations for [MovieEntity].
+ * Provides data from the "movies" table only.
  */
 interface MovieCrudRepository : CoroutineCrudRepository<MovieEntity, Int> {
 
