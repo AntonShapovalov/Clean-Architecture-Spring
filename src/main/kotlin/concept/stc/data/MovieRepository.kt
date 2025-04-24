@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component
 
 /**
  * The movie repository to manage local movies' data.
+ * Can aggregate data from multiple CRUD repositories (tables)
+ * and convert it to domain models. Repository behaves as a data facade
+ * that hides the database internal structure from domain services.
  *
- * In opposite to [MovieCrudRepository], it can aggregate data from multiple tables
- * and convert them to domain models.
- *
- * @param crudRepository the movie CRUD repository to get data from the database.
+ * @param crudRepository the CRUD repository to get movies from a local database.
  */
 @Component
 class MovieRepository(

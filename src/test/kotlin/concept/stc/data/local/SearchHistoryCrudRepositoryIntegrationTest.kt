@@ -1,6 +1,6 @@
 package concept.stc.data.local
 
-import concept.stc.data.local.entity.MovieEntity
+import concept.stc.data.local.entity.SearchEntity
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import java.time.LocalDateTime
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,10 +16,10 @@ import kotlin.test.assertNotNull
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class MovieCrudRepositoryIntegrationTest {
+class SearchHistoryCrudRepositoryIntegrationTest {
 
     @Autowired
-    private lateinit var repository: MovieCrudRepository
+    private lateinit var repository: SearchHistoryCrudRepository
 
     @AfterTest
     fun cleanUp() {
@@ -26,37 +27,34 @@ class MovieCrudRepositoryIntegrationTest {
     }
 
     @Test
-    fun `when saving movie, given entity, then saved id is not null`() = runTest {
+    fun `when saving search, given entity, then saved id is not null`() = runTest {
         // Given
-        val entity = _entity.copy(imdbID = "test-123")
+        val entity = _entity.copy(query = "test-query")
 
         // When
         val saved = repository.save(entity)
 
         // Then
         assertNotNull(saved.id)
-        assertEquals("test-123", saved.imdbID)
+        assertEquals("test-query", saved.query)
     }
 
     @Test
-    fun `when getting movie, given imdbID, then result is not null`() = runTest {
+    fun `when getting search, given query, then result is not null`() = runTest {
         // Given
-        val entity = _entity.copy(imdbID = "test-567")
+        val entity = _entity.copy(query = "saved-test-query")
         repository.save(entity)
 
         // When
-        val result = repository.getMovieByImdbId("test-567")
+        val result = repository.getSearchHistoryByQuery("saved-test-query")
 
         // Then
         assertNotNull(result)
-        assertEquals("test-567", result.imdbID)
+        assertEquals("saved-test-query", result.query)
     }
 
-    private val _entity = MovieEntity(
-        title = "",
-        year = "",
-        imdbID = "",
-        type = "",
-        poster = ""
+    private val _entity = SearchEntity(
+        query = "",
+        updated = LocalDateTime.now()
     )
 }
