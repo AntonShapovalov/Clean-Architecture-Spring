@@ -28,7 +28,7 @@ class MovieCrudRepositoryIntegrationTest {
     @Test
     fun `when saving movie, given entity, then saved id is not null`() = runTest {
         // Given
-        val entity = _entity.copy(imdbID = "test-123")
+        val entity = MovieEntity.empty().copy(imdbID = "test-123")
 
         // When
         val saved = repository.save(entity)
@@ -41,7 +41,7 @@ class MovieCrudRepositoryIntegrationTest {
     @Test
     fun `when getting movie, given imdbID, then result is not null`() = runTest {
         // Given
-        val entity = _entity.copy(imdbID = "test-567")
+        val entity = MovieEntity.empty().copy(imdbID = "test-567")
         repository.save(entity)
 
         // When
@@ -51,12 +51,4 @@ class MovieCrudRepositoryIntegrationTest {
         assertNotNull(result)
         assertEquals("test-567", result.imdbID)
     }
-
-    private val _entity = MovieEntity(
-        title = "",
-        year = "",
-        imdbID = "",
-        type = "",
-        poster = ""
-    )
 }

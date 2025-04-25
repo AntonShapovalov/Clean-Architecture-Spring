@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
-import java.time.LocalDateTime
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,7 +28,7 @@ class SearchHistoryCrudRepositoryIntegrationTest {
     @Test
     fun `when saving search, given entity, then saved id is not null`() = runTest {
         // Given
-        val entity = _entity.copy(query = "test-query")
+        val entity = SearchEntity.empty().copy(query = "test-query")
 
         // When
         val saved = repository.save(entity)
@@ -42,7 +41,7 @@ class SearchHistoryCrudRepositoryIntegrationTest {
     @Test
     fun `when getting search, given query, then result is not null`() = runTest {
         // Given
-        val entity = _entity.copy(query = "saved-test-query")
+        val entity = SearchEntity.empty().copy(query = "saved-test-query")
         repository.save(entity)
 
         // When
@@ -52,9 +51,4 @@ class SearchHistoryCrudRepositoryIntegrationTest {
         assertNotNull(result)
         assertEquals("saved-test-query", result.query)
     }
-
-    private val _entity = SearchEntity(
-        query = "",
-        updated = LocalDateTime.now()
-    )
 }

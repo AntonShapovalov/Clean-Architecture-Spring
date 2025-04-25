@@ -23,4 +23,20 @@ data class MovieEntity(
     @Column(value = "imdb_id") val imdbID: String,
     @Column(value = "type") val type: String,
     @Column(value = "poster") val poster: String
-)
+) {
+    /**
+     * Companion helper object.
+     */
+    companion object {
+        /**
+         * Creates an empty [MovieEntity] instance useful for testing.
+         */
+        fun empty() = MovieEntity(
+            title = "",
+            year = "",
+            imdbID = "",
+            type = "",
+            poster = ""
+        )
+    }
+}

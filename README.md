@@ -1,13 +1,14 @@
 # Clean Architecture for Spring
-The project demonstrates `how to` use Spring Boot, Clean Architecture and Kotlin Coroutines to build reactive web application.
+The project demonstrates `how to` use Spring Boot, Clean Architecture, and Kotlin Coroutines to build reactive web application.
 
 > [!NOTE]
 > Work in progress...
 > App is going to search movies using external [OMDB API](https://www.omdbapi.com).
 
 ### Install and run
-The recommended way to get started with the project is to use [Docker](https://docs.docker.com/get-started/get-docker/).
-Also is possible to run the application using command line or IDE.
+[Docker](https://docs.docker.com/get-started/get-docker/) is the recommended way to run the project. Container provides a consistent environment for the application, ensuring that it runs the same way on any machine.
+
+Alternative options, such as command line or an IDE, could require additional environment setup, e.g., a compatible Java version.
 
 #### Docker
 * Clone the repository
@@ -22,7 +23,7 @@ docker run -p 8080:8080 clean-architecture-spring
 * Open the browser and navigate to [http://localhost:8080](http://localhost:8080)
 
 #### Command line or IDE
-An alternative way is to run the application using command line:
+An alternative way is to run the application using the command line:
 ```shell
 java -jar release/app-release.jar
 ```
@@ -30,7 +31,7 @@ or using IDE open file `src/main/kotlin/concept/stc/STCApplication.kt` and run t
 
 ### Key points
 Overall, the application architecture provides a solid foundation for building a clean and maintainable code. It emphasizes the importance of separating concerns, isolating the core business logic, and making the code testable and reusable:
-* the business logic is isolated in domain layer 
+* the business logic is isolated in the domain layer 
 * domain is independent of any external frameworks
 * fast unit tests
 * data layer as a single source of truth
@@ -38,7 +39,7 @@ Overall, the application architecture provides a solid foundation for building a
 * single responsibility principle for every class and layer
 * data layer only provides data
 * domain layer applies data transformations and business rules
-* presentation layer only displays data and passes user input to the domain layer
+* the presentation layer only displays data and passes user input to the domain layer
 
 #### Clean Architecture Layers
 Spring provides predefined components for three main layers: data, domain, and presentation: 
