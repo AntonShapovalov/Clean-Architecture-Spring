@@ -1,6 +1,8 @@
 package concept.stc.data
 
 import concept.stc.data.local.MovieCrudRepository
+import concept.stc.data.local.SearchHistoryCrudRepository
+import concept.stc.data.local.SearchReferencesCrudRepository
 import concept.stc.data.local.entity.MovieEntity
 import concept.stc.domain.model.Movie
 import io.mockk.coEvery
@@ -14,15 +16,17 @@ import kotlin.test.assertNotNull
 
 class MovieRepositoryTest {
 
-    private val crudRepository = mockk<MovieCrudRepository>()
-    private val movieRepository = MovieRepository(crudRepository)
+    private val movieDao = mockk<MovieCrudRepository>()
+    private val searchDao = mockk<SearchHistoryCrudRepository>()
+    private val referencesDao = mockk<SearchReferencesCrudRepository>()
+    private val movieRepository = MovieRepository(movieDao, searchDao, referencesDao)
 
     @Test
     fun `when getting all movies, given db entities, then return domain models`() = runTest {
         // Given
         val entity1 = _entity.copy(id = 1, imdbID = "test-1")
         val entity2 = _entity.copy(id = 2, imdbID = "test-2")
-        coEvery { crudRepository.findAll() } returns flowOf(entity1, entity2)
+        coEvery { movieDao.findAll() } returns flowOf(entity1, entity2)
 
         // When
         val result = ArrayList<Movie>()
@@ -40,7 +44,7 @@ class MovieRepositoryTest {
     fun `when getting movie by id, given db entity, then return domain model`() = runTest {
         // Given
         val entity = _entity.copy(id = 1, imdbID = "test-1")
-        coEvery { crudRepository.findById(1) } returns entity
+        coEvery { movieDao.findById(1) } returns entity
 
         // When
         val result = movieRepository.getMovieById(1)
