@@ -13,4 +13,18 @@ data class Search(
     val id: Int,
     val query: String,
     val updatedDate: LocalDateTime
-)
+) {
+    /**
+     * Companion helper object.
+     */
+    companion object {
+        /**
+         * Creates an empty [Search] instance useful for testing.
+         */
+        fun empty() = Search(
+            id = 0,
+            query = "",
+            updatedDate = LocalDateTime.now()
+        )
+    }
+}

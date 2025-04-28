@@ -1,8 +1,8 @@
 package concept.stc.data.local
 
 import concept.stc.data.local.entity.MovieEntity
-import concept.stc.data.local.entity.ReferenceEntity
 import concept.stc.data.local.entity.SearchEntity
+import concept.stc.data.local.entity.SearchToMovieReference
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -19,10 +19,10 @@ import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class SearchReferencesCrudRepositoryIntegrationTest {
+class SearchMoviesCrudRepositoryIntegrationTest {
 
     @Autowired
-    private lateinit var repository: SearchReferencesCrudRepository
+    private lateinit var repository: SearchMoviesCrudRepository
 
     @Autowired
     private lateinit var movieRepository: MovieCrudRepository
@@ -37,8 +37,8 @@ class SearchReferencesCrudRepositoryIntegrationTest {
     }
 
     private suspend fun getMovieIds(): List<Int> {
-        val movieEntity1 = MovieEntity.empty().copy(imdbID = "test-movie-1")
-        val movieEntity2 = MovieEntity.empty().copy(imdbID = "test-movie-2")
+        val movieEntity1 = MovieEntity.empty().copy(imdbId = "test-movie-1")
+        val movieEntity2 = MovieEntity.empty().copy(imdbId = "test-movie-2")
         val entities = listOf(movieEntity1, movieEntity2)
         return movieRepository.saveAll(entities).toList().map { it.id ?: 0 }
     }
@@ -57,7 +57,7 @@ class SearchReferencesCrudRepositoryIntegrationTest {
         // Given
         val searchId = getSearchId()
         val movieId = getMovieIds()[0]
-        val entity = ReferenceEntity(searchId = searchId, movieId = movieId)
+        val entity = SearchToMovieReference(searchId = searchId, movieId = movieId)
 
         // When
         val saved = repository.save(entity)
@@ -73,8 +73,8 @@ class SearchReferencesCrudRepositoryIntegrationTest {
         // Given
         val searchId = getSearchId()
         val movieIds = getMovieIds()
-        val entity1 = ReferenceEntity(searchId = searchId, movieId = movieIds[0])
-        val entity2 = ReferenceEntity(searchId = searchId, movieId = movieIds[1])
+        val entity1 = SearchToMovieReference(searchId = searchId, movieId = movieIds[0])
+        val entity2 = SearchToMovieReference(searchId = searchId, movieId = movieIds[1])
         val saved = repository.saveAll(listOf(entity1, entity2))
         assertTrue(saved.toList().isNotEmpty())
 

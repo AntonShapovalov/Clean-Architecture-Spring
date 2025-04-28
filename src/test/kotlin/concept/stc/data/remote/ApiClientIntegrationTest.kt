@@ -29,8 +29,8 @@ class ApiClientIntegrationTest {
         val title = "testTitle"
         val properties = OmdbApiProperties(baseUrl = wiremockUrl, apiKey = key)
 
-        val movie = _movie.copy(title = title)
-        val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val movie = SearchResponse.Movie.empty().copy(title = title)
+        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(searchResponse)
 
@@ -48,18 +48,4 @@ class ApiClientIntegrationTest {
         // Then
         assertEquals(searchResponse, response)
     }
-
-    private val _movie = SearchResponse.Movie(
-        title = "",
-        year = "",
-        imdbID = "",
-        type = "",
-        poster = ""
-    )
-
-    private val _searchResponse = SearchResponse(
-        movies = emptyList(),
-        totalResults = 0,
-        response = ""
-    )
 }

@@ -53,8 +53,8 @@ class ApiServiceIntegrationTest {
     @Test
     fun `when load movies, given API response, then save them to database`() = runTest {
         // Given
-        val movie = _movie.copy(imdbID = "testId")
-        val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val movie = SearchResponse.Movie.empty().copy(imdbID = "testId")
+        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
 
         coEvery { apiClient.search("test") } returns searchResponse
 
@@ -63,20 +63,6 @@ class ApiServiceIntegrationTest {
 
         // Then
         val saved = repository.findAll().first()
-        assertEquals("testId", saved.imdbID)
+        assertEquals("testId", saved.imdbId)
     }
-
-    private val _movie = SearchResponse.Movie(
-        title = "",
-        year = "",
-        imdbID = "",
-        type = "",
-        poster = ""
-    )
-
-    private val _searchResponse = SearchResponse(
-        movies = emptyList(),
-        totalResults = 0,
-        response = ""
-    )
 }

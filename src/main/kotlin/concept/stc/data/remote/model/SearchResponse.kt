@@ -1,14 +1,13 @@
 package concept.stc.data.remote.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import concept.stc.data.remote.model.SearchResponse.Movie
 
 /**
  * The search response of the external OMDB API.
  *
  * @param movies the list of [Movie].
- * @param totalResults the total count of result.
- * @param response the boolean flag indicates response is successful or not.
+ * @param totalResults the total count of a result.
+ * @param response the boolean flag indicates the response is successful or not.
  */
 data class SearchResponse(
     @get:JsonProperty("Search") val movies: List<Movie>,
@@ -30,5 +29,35 @@ data class SearchResponse(
         @get:JsonProperty("imdbID") val imdbID: String,
         @get:JsonProperty("Type") val type: String,
         @get:JsonProperty("Poster") val poster: String
-    )
+    ) {
+        /**
+         * Companion helper object.
+         */
+        companion object {
+            /**
+             * Creates an empty [Movie] instance useful for testing.
+             */
+            fun empty() = Movie(
+                title = "",
+                year = "",
+                imdbID = "",
+                type = "",
+                poster = ""
+            )
+        }
+    }
+
+    /**
+     * Companion helper object.
+     */
+    companion object {
+        /**
+         * Creates an empty [SearchResponse] instance useful for testing.
+         */
+        fun empty() = SearchResponse(
+            movies = emptyList(),
+            totalResults = 0,
+            response = ""
+        )
+    }
 }

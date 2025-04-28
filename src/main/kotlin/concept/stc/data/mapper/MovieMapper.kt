@@ -11,7 +11,7 @@ fun SearchResponse.Movie.toEntity() = MovieEntity(
     id = null,
     title = title,
     year = year,
-    imdbID = imdbID,
+    imdbId = imdbID,
     type = type,
     poster = poster
 )
@@ -23,7 +23,7 @@ fun MovieEntity.toDomain() = Movie(
     id = id ?: 0,
     title = title,
     year = year,
-    imdbID = imdbID,
+    imdbId = imdbId,
     type = type,
     poster = poster
 )

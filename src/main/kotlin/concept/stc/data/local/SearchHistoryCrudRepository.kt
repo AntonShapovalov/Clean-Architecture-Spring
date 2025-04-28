@@ -1,7 +1,6 @@
 package concept.stc.data.local
 
 import concept.stc.data.local.entity.SearchEntity
-import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 /**
@@ -17,6 +16,5 @@ interface SearchHistoryCrudRepository : CoroutineCrudRepository<SearchEntity, In
      *
      * @return the search entity or null if not found.
      */
-    @Query("SELECT * FROM search_history WHERE query = :query")
     suspend fun getSearchHistoryByQuery(query: String): SearchEntity?
 }

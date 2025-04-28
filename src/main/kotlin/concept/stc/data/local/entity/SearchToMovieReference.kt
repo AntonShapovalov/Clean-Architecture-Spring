@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
 /**
- * Represents "search to movies" reference entity in a database.
+ * Represents "search to movies" many-to-many reference.
  * Every search can have multiple movies.
  * One movie can be referenced by multiple searches.
  *
@@ -13,8 +13,8 @@ import org.springframework.data.relational.core.mapping.Table
  * @param searchId the search id.
  * @param movieId the movie id.
  */
-@Table("search_references")
-data class ReferenceEntity(
+@Table("search_movies")
+data class SearchToMovieReference(
     @Id
     @Column(value = "id") val id: Int? = null,
     @Column(value = "search_id") val searchId: Int,

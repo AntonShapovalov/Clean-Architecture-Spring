@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS search_history (
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS search_references (
+CREATE TABLE IF NOT EXISTS search_movies (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     search_id INTEGER,
     movie_id INTEGER,

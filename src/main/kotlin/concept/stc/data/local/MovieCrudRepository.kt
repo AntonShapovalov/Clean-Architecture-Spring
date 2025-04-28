@@ -1,7 +1,6 @@
 package concept.stc.data.local
 
 import concept.stc.data.local.entity.MovieEntity
-import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 /**
@@ -17,6 +16,5 @@ interface MovieCrudRepository : CoroutineCrudRepository<MovieEntity, Int> {
      *
      * @return the movie entity or null if not found.
      */
-    @Query("SELECT * FROM movies WHERE imdb_id = :imdbId")
     suspend fun getMovieByImdbId(imdbId: String): MovieEntity?
 }
