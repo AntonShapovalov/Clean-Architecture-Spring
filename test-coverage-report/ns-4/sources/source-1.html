@@ -1,0 +1,200 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ApiService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">concept.stc.data</a>
+</div>
+
+<h1>Coverage Summary for Class: ApiService (concept.stc.data)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ApiService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ApiService$loadMovies$1</td>
+  </tr>
+  <tr>
+    <td class="name">ApiService$loadMovies$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package concept.stc.data
+&nbsp;
+&nbsp;import concept.stc.coroutines.DispatchersProvider
+&nbsp;import concept.stc.data.local.MovieCrudRepository
+&nbsp;import concept.stc.data.mapper.toEntity
+&nbsp;import concept.stc.data.remote.ApiClient
+&nbsp;import kotlinx.coroutines.withContext
+&nbsp;import org.springframework.stereotype.Service
+&nbsp;
+&nbsp;/**
+&nbsp; * Data service to manage API operations.
+&nbsp; * In opposite to the domain service that operates with pure domain models,
+&nbsp; * this service operates with &quot;raw&quot; data, as API response and database entities.
+&nbsp; *
+&nbsp; * @param apiClient the API client.
+&nbsp; * @param repository the CRUD movie repository.
+&nbsp; * @param dispatchers the dispatcher provider.
+&nbsp; */
+<b class="fc">&nbsp;@Service</b>
+&nbsp;class ApiService(
+<b class="fc">&nbsp;    private val apiClient: ApiClient,</b>
+<b class="fc">&nbsp;    private val repository: MovieCrudRepository,</b>
+<b class="fc">&nbsp;    private val dispatchers: DispatchersProvider</b>
+&nbsp;) {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Load movies from the external API and save them to the database.
+&nbsp;     *
+&nbsp;     * @param title the movie title.
+&nbsp;     *
+&nbsp;     * @return the list of internal movie IDs.
+&nbsp;     */
+&nbsp;    suspend fun loadMovies(title: String): List&lt;Int&gt; {
+<b class="fc">&nbsp;        val result = ArrayList&lt;Int&gt;()</b>
+<b class="fc">&nbsp;        withContext(dispatchers.io) {</b>
+<b class="fc">&nbsp;            val movies = apiClient.search(title).movies</b>
+<b class="fc">&nbsp;            for (movie in movies) {</b>
+<b class="fc">&nbsp;                val entity = repository.getMovieByImdbId(movie.imdbID)</b>
+<b class="fc">&nbsp;                if (entity == null) {</b>
+<b class="fc">&nbsp;                    val newEntity = repository.save(movie.toEntity())</b>
+<b class="fc">&nbsp;                    result.add(newEntity.id ?: 0)</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return result</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-04-29 21:15</div>
+</div>
+</body>
+</html>

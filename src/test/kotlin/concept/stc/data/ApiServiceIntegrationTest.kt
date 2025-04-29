@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -53,16 +54,17 @@ class ApiServiceIntegrationTest {
     @Test
     fun `when load movies, given API response, then save them to database`() = runTest {
         // Given
-        val movie = SearchResponse.Movie.empty().copy(imdbID = "testId")
+        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
         val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
 
         coEvery { apiClient.search("test") } returns searchResponse
 
         // When
-        service.loadMovies("test")
+        val ids = service.loadMovies("test")
 
         // Then
+        assertTrue(ids.isNotEmpty())
         val saved = repository.findAll().first()
-        assertEquals("testId", saved.imdbId)
+        assertEquals("test-id", saved.imdbId)
     }
 }

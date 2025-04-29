@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ApiServiceTest {
@@ -36,49 +37,37 @@ class ApiServiceTest {
     @Test
     fun `when load movies, given API response, then save them to database`() = runTest {
         // Given
-        val movie = _movie.copy(imdbID = "testId")
-        val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
+        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
         val entity = movie.toEntity()
 
         coEvery { apiClient.search("test") } returns searchResponse
-        coEvery { repository.getMovieByImdbId("testId") } returns null
+        coEvery { repository.getMovieByImdbId("test-id") } returns null
         coEvery { repository.save(entity) } returns entity
 
         // When
-        service.loadMovies("test")
+        val ids = service.loadMovies("test")
 
         // Then
+        assertTrue(ids.isNotEmpty())
         coVerify { repository.save(entity) }
     }
 
     @Test
     fun `when load movies, given movie is saved already, then should not save it`() = runTest {
         // Given
-        val movie = _movie.copy(imdbID = "testId")
-        val searchResponse = _searchResponse.copy(movies = listOf(movie))
+        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
+        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
         val entity = movie.toEntity()
 
         coEvery { apiClient.search("test") } returns searchResponse
-        coEvery { repository.getMovieByImdbId("testId") } returns entity
+        coEvery { repository.getMovieByImdbId("test-id") } returns entity
 
         // When
-        service.loadMovies("test")
+        val ids = service.loadMovies("test")
 
         // Then
+        assertTrue(ids.isEmpty())
         coVerify { repository.save(entity) wasNot Called }
     }
-
-    private val _movie = SearchResponse.Movie(
-        title = "",
-        year = "",
-        imdbID = "",
-        type = "",
-        poster = ""
-    )
-
-    private val _searchResponse = SearchResponse(
-        movies = emptyList(),
-        totalResults = 0,
-        response = ""
-    )
 }

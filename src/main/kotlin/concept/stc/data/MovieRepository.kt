@@ -46,5 +46,5 @@ class MovieRepository(
      * @return the flow that emits domain [Movie] models.
      */
     suspend fun getMoviesByIds(movieIds: Flow<Int>): Flow<Movie> = movieDao
-        .findAllById(movieIds).map { movieEntity -> movieEntity.toDomain() }
+        .findAllById(movieIds).map { it.toDomain() }
 }

@@ -41,6 +41,10 @@ Overall, the application architecture provides a solid foundation for building a
 * domain layer applies data transformations and business rules
 * the presentation layer only displays data and passes user input to the domain layer
 
+#### Test coverage
+The layered structure of the application allows testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers could be additionally covered with integration and end-to-end tests. 
+In this way the [test coverage](test-coverage-report/index.html) of the application can reach 100% with keeping tests fast, simple, and reliable.
+
 #### Clean Architecture Layers
 Spring provides predefined components for three main layers: data, domain, and presentation: 
 * the data layer is implemented using `@Repository` classes

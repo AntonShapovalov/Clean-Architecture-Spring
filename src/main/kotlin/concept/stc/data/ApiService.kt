@@ -27,16 +27,21 @@ class ApiService(
      * Load movies from the external API and save them to the database.
      *
      * @param title the movie title.
+     *
+     * @return the list of internal movie IDs.
      */
-    suspend fun loadMovies(title: String) {
+    suspend fun loadMovies(title: String): List<Int> {
+        val result = ArrayList<Int>()
         withContext(dispatchers.io) {
             val movies = apiClient.search(title).movies
             for (movie in movies) {
                 val entity = repository.getMovieByImdbId(movie.imdbID)
                 if (entity == null) {
-                    repository.save(movie.toEntity())
+                    val newEntity = repository.save(movie.toEntity())
+                    result.add(newEntity.id ?: 0)
                 }
             }
         }
+        return result
     }
 }
