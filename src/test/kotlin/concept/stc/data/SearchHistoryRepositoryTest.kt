@@ -2,6 +2,7 @@ package concept.stc.data
 
 import concept.stc.data.local.SearchHistoryCrudRepository
 import concept.stc.data.local.SearchMoviesCrudRepository
+import concept.stc.data.local.entity.SearchEntity
 import concept.stc.data.local.entity.SearchToMovieReference
 import concept.stc.data.mapper.toEntity
 import concept.stc.domain.model.Search
@@ -41,22 +42,24 @@ class SearchHistoryRepositoryTest {
     @Test
     fun `when saving search, given movies ids, then save references`() = runTest {
         // Given
-        val search = Search.empty().copy(id = 1)
+        val search = Search.empty().copy(id = 1, query = "test-query")
         val entity = search.toEntity()
-        val slot = slot<List<SearchToMovieReference>>()
-        coEvery { searchDao.save(entity) } returns entity
-        coEvery { referencesDao.saveAll(capture(slot)) } returns emptyFlow()
+        val entitySlot = slot<SearchEntity>()
+        val referencesSlot = slot<List<SearchToMovieReference>>()
+        coEvery { searchDao.save(capture(entitySlot)) } returns entity
+        coEvery { referencesDao.saveAll(capture(referencesSlot)) } returns emptyFlow()
 
         // When
-        repository.saveSearch(search, listOf(5, 6))
+        val result = repository.saveSearch("test-query", listOf(5, 6))
 
         // Then
-        coVerify { searchDao.save(entity) }
-        assertEquals(2, slot.captured.size)
-        assertEquals(1, slot.captured[0].searchId)
-        assertEquals(5, slot.captured[0].movieId)
-        assertEquals(1, slot.captured[1].searchId)
-        assertEquals(6, slot.captured[1].movieId)
+        assertEquals(search, result)
+        coVerify { searchDao.save(entitySlot.captured) }
+        assertEquals(2, referencesSlot.captured.size)
+        assertEquals(1, referencesSlot.captured[0].searchId)
+        assertEquals(5, referencesSlot.captured[0].movieId)
+        assertEquals(1, referencesSlot.captured[1].searchId)
+        assertEquals(6, referencesSlot.captured[1].movieId)
     }
 
     @Test
