@@ -43,7 +43,7 @@ Overall, the application architecture provides a solid foundation for building a
 
 #### Test coverage
 The layered structure of the application allows testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers could be additionally covered with integration and end-to-end tests. 
-In this way the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki) of the application can reach 100% with keeping tests fast, simple, and reliable.
+In this way the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage) of the application can reach 100% with keeping tests fast, simple, and reliable.
 
 #### Clean Architecture layers
 Spring provides predefined components for three main layers: data, domain, and presentation: 
