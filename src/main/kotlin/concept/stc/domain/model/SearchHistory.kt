@@ -9,17 +9,4 @@ package concept.stc.domain.model
 data class SearchHistory(
     val searches: List<Search>,
     val movies: List<Movie>
-) {
-    /**
-     * Companion helper object.
-     */
-    companion object {
-        /**
-         * Creates an empty [SearchHistory] instance useful for testing.
-         */
-        fun empty() = SearchHistory(
-            searches = emptyList(),
-            movies = emptyList()
-        )
-    }
-}
+)

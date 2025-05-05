@@ -33,29 +33,26 @@ class SearchService(
         return when {
             search == null -> newSearch(title)
             search.isExpired() -> updateSearch(search)
-            else -> getSavedSearch(search)
+            else -> getSearchHistory(search)
         }
     }
 
     private suspend fun newSearch(title: String): SearchHistory {
         val movieIds = apiService.loadMovies(title)
-        searchRepository.saveSearch(title, movieIds)
-        return getSearchHistory(movieIds)
+        val newSearch = searchRepository.saveSearch(title)
+        searchRepository.saveMovieIdsForSearch(newSearch, movieIds)
+        return getSearchHistory(newSearch)
     }
 
     private suspend fun updateSearch(search: Search): SearchHistory {
-        val updatedSearch = search.copy(updatedDate = LocalDateTime.now())
         val movieIds = apiService.loadMovies(search.query)
-        searchRepository.updateSearch(updatedSearch, movieIds)
-        return getSearchHistory(movieIds)
+        val updatedSearch = searchRepository.saveSearch(search.copy(updatedDate = LocalDateTime.now()))
+        searchRepository.updateMovieIdsForSearch(updatedSearch, movieIds)
+        return getSearchHistory(updatedSearch)
     }
 
-    private suspend fun getSavedSearch(search: Search): SearchHistory {
-        val movieIds = searchRepository.getMoviesIdsBySearchId(search.id).toList()
-        return getSearchHistory(movieIds)
-    }
-
-    private suspend fun getSearchHistory(movieIds: List<Int>): SearchHistory {
+    private suspend fun getSearchHistory(search: Search): SearchHistory {
+        val movieIds = searchRepository.getMovieIdsBySearch(search).toList()
         val movies = movieRepository.getMoviesByIds(movieIds).toList()
         val searches = searchRepository.getAllSearches().toList().sortedByDescending { it.updatedDate }
         return SearchHistory(searches, movies)
