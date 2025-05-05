@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > SearchMoviesCrudRepository</title>
+  <title>Coverage Report > Movie</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,33 +19,80 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">concept.stc.data.local</a>
+    <a href="../index.html">concept.stc.domain.model</a>
 </div>
 
-<h1>Coverage Summary for Class: SearchMoviesCrudRepository (concept.stc.data.local)</h1>
+<h1>Coverage Summary for Class: Movie (concept.stc.domain.model)</h1>
 
 <table class="coverageStats">
 
 <tr>
   <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Movie</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
 </tr>
   <tr>
-    <td class="name">SearchMoviesCrudRepository$Subclass4</td>
-  </tr>
-  <tr>
-    <td class="name">SearchMoviesCrudRepository$Subclass4$auxiliary$5minlyy1</td>
-  </tr>
-  <tr>
-    <td class="name">SearchMoviesCrudRepository$Subclass4$auxiliary$7QitE2Dx</td>
-  </tr>
-  <tr>
-    <td class="name">SearchMoviesCrudRepository$Subclass4$auxiliary$TEBirtAs</td>
-  </tr>
-  <tr>
-    <td class="name">SearchMoviesCrudRepository$Subclass4$auxiliary$wrt5te9Q</td>
+    <td class="name">Movie$Companion</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
 </tr>
 </table>
 
@@ -54,26 +101,42 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package concept.stc.data.local
-&nbsp;
-&nbsp;import concept.stc.data.local.entity.SearchToMovieReference
-&nbsp;import kotlinx.coroutines.flow.Flow
-&nbsp;import org.springframework.data.repository.kotlin.CoroutineCrudRepository
+<code class="sourceCode" id="sourceCode">&nbsp;package concept.stc.domain.model
 &nbsp;
 &nbsp;/**
-&nbsp; * CRUD repository to operate with [SearchToMovieReference].
-&nbsp; * Provides data access for the &quot;search_movies&quot; table.
+&nbsp; * The movie domain model.
+&nbsp; *
+&nbsp; * @param id the movie internal id.
+&nbsp; * @param title the movie title.
+&nbsp; * @param year the movie year.
+&nbsp; * @param imdbId the movie id.
+&nbsp; * @param type the movie type.
+&nbsp; * @param poster the movie poster.
 &nbsp; */
-&nbsp;interface SearchMoviesCrudRepository : CoroutineCrudRepository&lt;SearchToMovieReference, Int&gt; {
-&nbsp;
+<b class="fc">&nbsp;data class Movie(</b>
+<b class="fc">&nbsp;    val id: Int,</b>
+<b class="fc">&nbsp;    val title: String,</b>
+<b class="fc">&nbsp;    val year: String,</b>
+<b class="fc">&nbsp;    val imdbId: String,</b>
+<b class="fc">&nbsp;    val type: String,</b>
+<b class="fc">&nbsp;    val poster: String</b>
+&nbsp;) {
 &nbsp;    /**
-&nbsp;     * Find search references by search id.
-&nbsp;     *
-&nbsp;     * @param searchId the id of search.
-&nbsp;     *
-&nbsp;     * @return the flow emitting all references for the given search ID.
+&nbsp;     * Companion helper object.
 &nbsp;     */
-&nbsp;    suspend fun getReferencesBySearchId(searchId: Int): Flow&lt;SearchToMovieReference&gt;
+&nbsp;    companion object {
+&nbsp;        /**
+&nbsp;         * Creates an empty [Movie] instance useful for testing.
+&nbsp;         */
+<b class="fc">&nbsp;        fun empty() = Movie(</b>
+<b class="fc">&nbsp;            id = 0,</b>
+<b class="fc">&nbsp;            title = &quot;&quot;,</b>
+<b class="fc">&nbsp;            year = &quot;&quot;,</b>
+<b class="fc">&nbsp;            imdbId = &quot;&quot;,</b>
+<b class="fc">&nbsp;            type = &quot;&quot;,</b>
+<b class="fc">&nbsp;            poster = &quot;&quot;</b>
+&nbsp;        )
+&nbsp;    }
 &nbsp;}
 </code>
 </pre>
@@ -98,7 +161,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-04-29 21:15</div>
+    <div style="float:right;">generated on 2025-05-05 19:43</div>
 </div>
 </body>
 </html>
