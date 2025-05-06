@@ -52,7 +52,7 @@ class SearchService(
     }
 
     private suspend fun getSearchHistory(search: Search): SearchHistory {
-        val movieIds = searchRepository.getMovieIdsBySearch(search).toList()
+        val movieIds = searchRepository.getMovieIdsBySearch(search)
         val movies = movieRepository.getMoviesByIds(movieIds).toList()
         val searches = searchRepository.getAllSearches().toList().sortedByDescending { it.updatedDate }
         return SearchHistory(searches, movies)
