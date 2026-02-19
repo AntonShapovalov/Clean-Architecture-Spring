@@ -3,31 +3,31 @@ The project demonstrates `how to` use Spring Boot, Clean Architecture, and Kotli
 
 > [!NOTE]
 > Work in progress...
-> App is going to search movies using external [OMDB API](https://www.omdbapi.com).
+> App is going to search for movies using external [OMDB API](https://www.omdbapi.com) and save search results in the database.
 
 ### Install and run
-[Docker](https://docs.docker.com/get-started/get-docker/) is the recommended way to run the project. Container provides a consistent environment for the application, ensuring that it runs the same way on any machine.
+For simplicity and demostration purposes, the project contains both `backend` and `frontend` modules in one repository. [Docker](https://docs.docker.com/get-started/get-docker/) compose starts both services and exposes the frontend via default port 80.
+For local development, Spring Boot backend and Angular frontend could be started using IDE or command line.
 
-Alternative options, such as command line or an IDE, could require additional environment setup, e.g., a compatible Java version.
-
-#### Docker
+#### Docker compose
 * Clone the repository
-* Build the image:
+* Start the application:
 ```shell
-docker build -t clean-architecture-spring .
+docker compose up --build
 ```
-* Run the container:
-```shell
-docker run -p 8080:8080 clean-architecture-spring
-```
-* Open the browser and navigate to [http://localhost:8080](http://localhost:8080)
+* Open the browser and navigate to [http://localhost](http://localhost)
 
-#### Command line or IDE
-An alternative way is to run the application using the command line:
+#### Run Spring backend via IDE
+* Open the project in IDE and run the `backend/src/main/kotlin/clean/architecture/omdb/OmdbApplication.kt` class
+* Navigate to [http://localhost:8080](http://localhost:8080)
+
+#### Run Angular frontend via terminal
+* Open terminal window and navigate to `frontend` folder
+* Run dev server:
 ```shell
-java -jar release/app-release.jar
+ng serve 
 ```
-or using IDE open file `src/main/kotlin/concept/stc/STCApplication.kt` and run the main function.
+* Click the link to open a browser and navigate to [http://localhost:4200](http://localhost:4200)
 
 ### Key points
 Overall, the application architecture provides a solid foundation for building a clean and maintainable code. It emphasizes the importance of separating concerns, isolating the core business logic, and making the code testable and reusable:

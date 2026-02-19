@@ -4,10 +4,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/resources/secrets.properties
-/response-sample/movies-response.json
 
-### STS ###
+### Backend ###
+backend/src/main/resources/secrets.properties
+backend/response-sample/
 .apt_generated
 .classpath
 .factorypath
