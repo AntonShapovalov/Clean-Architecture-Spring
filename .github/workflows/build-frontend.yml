@@ -45,8 +45,10 @@ jobs:
 
       - name: Zip frontend content
         run: |
+          mkdir -p ../release
           rm -f ../release/frontend.zip
-          zip -r ../release/frontend.zip dist
+          test -d dist/omdb-frontend
+          zip -r ../release/frontend.zip dist/omdb-frontend
 
       - name: Commit and push ZIP to release directory
         run: |

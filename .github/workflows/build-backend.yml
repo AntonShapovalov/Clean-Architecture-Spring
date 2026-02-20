@@ -42,7 +42,9 @@ jobs:
         run: ./gradlew build detekt
 
       - name: Move JAR to release directory
-        run: mv -f build/libs/*SNAPSHOT.jar release/backend.jar
+        run: |
+          mkdir -p release
+          mv -f backend/build/libs/*SNAPSHOT.jar release/backend.jar
 
       - name: Commit and push JAR to release directory
         run: |
