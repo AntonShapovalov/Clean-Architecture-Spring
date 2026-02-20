@@ -36,7 +36,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Create secrets.properties
-        run: echo "omdb.api-key=${{ secrets.OMDB_API_KEY }}" > src/main/resources/secrets.properties
+        run: echo "omdb.api-key=${{ secrets.OMDB_API_KEY }}" > backend/src/main/resources/secrets.properties
 
       - name: Build and validate
         run: ./gradlew build detekt
