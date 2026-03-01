@@ -1,21 +1,16 @@
 # This workflow builds an Angular project, runs tests and lint with a single version of Node.
-
 name: Build Frontend
 
 on:
-  push:
-    branches: [ "master" ]
-    paths-ignore:
-      - "release/frontend.zip"
-  pull_request:
-    branches: [ "master" ]
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   build-frontend:
     name: Build Frontend
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     defaults:
       run:
@@ -27,8 +22,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
@@ -43,17 +38,16 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Zip frontend content
+      - name: Prepare frontend artifact
         run: |
-          mkdir -p ../release
-          rm -f ../release/frontend.zip
+          mkdir -p ../out
+          rm -f ../out/frontend.zip
           test -d dist/omdb-frontend
-          zip -r ../release/frontend.zip dist/omdb-frontend
+          zip -r ../out/frontend.zip dist/omdb-frontend
 
-      - name: Commit and push ZIP to release directory
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add ../release/frontend.zip
-          git commit -m 'Update release/frontend.zip' ../release/frontend.zip
-          git push origin master
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-zip
+          path: out/frontend.zip
+          if-no-files-found: error
