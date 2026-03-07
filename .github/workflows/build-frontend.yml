@@ -12,10 +12,6 @@ jobs:
     permissions:
       contents: read
 
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - uses: actions/checkout@v4
 
@@ -28,22 +24,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: frontend
 
       - name: Lint
         run: npm run lint
+        working-directory: frontend
 
       - name: Test
         run: npm test -- --watch=false
+        working-directory: frontend
 
       - name: Build
         run: npm run build
+        working-directory: frontend
 
       - name: Prepare frontend artifact
         run: |
-          mkdir -p ../out
-          rm -f ../out/frontend.zip
-          test -d dist/omdb-frontend
-          zip -r ../out/frontend.zip dist/omdb-frontend
+          mkdir -p out
+          rm -f out/frontend.zip
+          test -d frontend/dist/omdb-frontend
+          zip -r out/frontend.zip frontend/dist/omdb-frontend
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
