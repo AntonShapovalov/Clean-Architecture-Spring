@@ -5,6 +5,7 @@ import clean.architecture.omdb.data.MovieRepository
 import clean.architecture.omdb.data.SearchHistoryRepository
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.model.SearchHistory
+import clean.architecture.omdb.domain.usecase.GetAllSearchesUseCase
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -15,12 +16,14 @@ import java.time.LocalDateTime
  * @param searchRepository the search history repository.
  * @param movieRepository the movie repository.
  * @param apiService the API service.
+ * @param getAllSearchesUseCase the use case to get all searches from history.
  */
 @Service
 class SearchService(
     private val searchRepository: SearchHistoryRepository,
     private val movieRepository: MovieRepository,
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val getAllSearchesUseCase: GetAllSearchesUseCase
 ) {
 
     /**
@@ -54,7 +57,7 @@ class SearchService(
     private suspend fun getSearchHistory(search: Search): SearchHistory {
         val movieIds = searchRepository.getMovieIdsBySearch(search)
         val movies = movieRepository.getMoviesByIds(movieIds).toList()
-        val searches = searchRepository.getAllSearches().toList().sortedByDescending { it.updatedDate }
+        val searches = getAllSearchesUseCase()
         return SearchHistory(searches, movies)
     }
 }

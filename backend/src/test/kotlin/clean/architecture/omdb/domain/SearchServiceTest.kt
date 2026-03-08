@@ -6,12 +6,12 @@ import clean.architecture.omdb.data.SearchHistoryRepository
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.model.SearchHistory
+import clean.architecture.omdb.domain.usecase.GetAllSearchesUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,7 +23,8 @@ class SearchServiceTest {
     private val searchRepository = mockk<SearchHistoryRepository>()
     private val movieRepository = mockk<MovieRepository>()
     private val apiService = mockk<ApiService>()
-    private val searchService = SearchService(searchRepository, movieRepository, apiService)
+    private val getAllSearchesUseCase = mockk<GetAllSearchesUseCase>()
+    private val searchService = SearchService(searchRepository, movieRepository, apiService, getAllSearchesUseCase)
 
     @Test
     fun `when searching, given no saved search, then perform new search`() = runTest {
@@ -43,7 +44,7 @@ class SearchServiceTest {
         coEvery { searchRepository.saveMovieIdsForSearch(search, movieIds) } returns Unit
         coEvery { searchRepository.getMovieIdsBySearch(search) } returns movieIdsFlow
         coEvery { movieRepository.getMoviesByIds(movieIdsFlow) } returns movies.asFlow()
-        coEvery { searchRepository.getAllSearches() } returns flowOf(search)
+        coEvery { getAllSearchesUseCase() } returns listOf(search)
 
         // When
         val result = searchService.search(title)
@@ -68,7 +69,7 @@ class SearchServiceTest {
         coEvery { searchRepository.updateMovieIdsForSearch(search, emptyList()) } returns Unit
         coEvery { searchRepository.getMovieIdsBySearch(search) } returns emptyFlow()
         coEvery { movieRepository.getMoviesByIds(emptyFlow()) } returns emptyFlow()
-        coEvery { searchRepository.getAllSearches() } returns flowOf(search)
+        coEvery { getAllSearchesUseCase() } returns listOf(search)
 
         // When
         val result = searchService.search(title)
