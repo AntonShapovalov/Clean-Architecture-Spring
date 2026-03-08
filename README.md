@@ -46,7 +46,10 @@ The layered structure of the application allows testing of each layer independen
 In this way, the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage) of the application can reach 100% while keeping tests fast, simple, and reliable.
 
 #### Clean Architecture Layers
-Spring provides predefined components for three main layers: data, domain, and presentation: 
-* The data layer is implemented using `@Repository` classes
-* The domain layer is implemented using `@Service` classes 
-* The presentation layer is implemented using `@Controller` classes.
+Unlike Android, which does not define application layers by default, Spring provides predefined stereotypes that can be used to organize the three main layers: data, domain, and presentation.
+
+* The data layer is typically implemented using `@Repository` classes
+* The domain layer is typically implemented using `@Service` classes
+* The presentation layer is typically implemented using `@Controller` classes
+
+However, use case classes should encapsulate the domain logic, keeping services lightweight and making the business logic easy to cover with fast unit tests.
