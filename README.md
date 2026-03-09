@@ -52,4 +52,4 @@ Unlike Android, which does not define application layers by default, Spring prov
 * The domain layer is typically implemented using `@Service` classes
 * The presentation layer is typically implemented using `@Controller` classes
 
-However, use case classes should encapsulate the domain logic, keeping services lightweight and making the business logic easy to cover with fast unit tests.
+However, placing all business logic in service classes can make them complex and difficult to test. Instead, business logic and data transformations should be encapsulated in dedicated use case classes. This approach keeps services lightweight and makes the business logic easier to cover with fast unit tests.
