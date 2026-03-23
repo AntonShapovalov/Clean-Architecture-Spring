@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class GetAllSearchesUseCaseTest {
+class GetSearchHistoryUseCaseTest {
 
     private val searchRepository = mockk<SearchHistoryRepository>()
-    private val useCase = GetAllSearchesUseCase(searchRepository)
+    private val useCase = GetSearchHistoryUseCase(searchRepository)
 
     @Test
-    fun `when invoked, then return all searches from repository sorted by date descending`() = runTest {
+    fun `when getting search history, then return all searches sorted by date descending`() = runTest {
         // Given
         val olderDate = LocalDateTime.now().minusDays(1)
         val newerDate = LocalDateTime.now()

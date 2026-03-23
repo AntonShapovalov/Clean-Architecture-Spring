@@ -1,63 +1,31 @@
 package clean.architecture.omdb.domain
 
-import clean.architecture.omdb.data.ApiService
-import clean.architecture.omdb.data.MovieRepository
-import clean.architecture.omdb.data.SearchHistoryRepository
+import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
-import clean.architecture.omdb.domain.model.SearchHistory
-import clean.architecture.omdb.domain.usecase.GetAllSearchesUseCase
-import kotlinx.coroutines.flow.toList
+import clean.architecture.omdb.domain.usecase.GetMoviesUseCase
+import clean.architecture.omdb.domain.usecase.GetSearchHistoryUseCase
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 /**
  * The search service.
+ * The service acts as an abstraction between domain use cases and REST controllers.
  *
- * @param searchRepository the search history repository.
- * @param movieRepository the movie repository.
- * @param apiService the API service.
- * @param getAllSearchesUseCase the use case to get all searches from history.
+ * @param getSearchHistoryUseCase the use case to get all searches from history.
+ * @param getMoviesUseCase the use case to get movies by recent search id.
  */
 @Service
 class SearchService(
-    private val searchRepository: SearchHistoryRepository,
-    private val movieRepository: MovieRepository,
-    private val apiService: ApiService,
-    private val getAllSearchesUseCase: GetAllSearchesUseCase
+    private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    private val getMoviesUseCase: GetMoviesUseCase
 ) {
 
     /**
-     * Search movies by title.
-     *
-     * @param title the movie title.
+     * Get all searches from history.
      */
-    suspend fun search(title: String): SearchHistory {
-        val search = searchRepository.getSearchByQuery(title)
-        return when {
-            search == null -> newSearch(title)
-            search.isExpired() -> updateSearch(search)
-            else -> getSearchHistory(search)
-        }
-    }
+    suspend fun getSearchHistory(): List<Search> = getSearchHistoryUseCase()
 
-    private suspend fun newSearch(title: String): SearchHistory {
-        val movieIds = apiService.loadMovies(title)
-        val newSearch = searchRepository.saveSearch(title)
-        searchRepository.saveMovieIdsForSearch(newSearch, movieIds)
-        return getSearchHistory(newSearch)
-    }
-
-    private suspend fun updateSearch(search: Search): SearchHistory {
-        val movieIds = apiService.loadMovies(search.query)
-        val updatedSearch = searchRepository.saveSearch(search.copy(updatedDate = LocalDateTime.now()))
-        searchRepository.updateMovieIdsForSearch(updatedSearch, movieIds)
-        return getSearchHistory(updatedSearch)
-    }
-
-    private suspend fun getSearchHistory(search: Search): SearchHistory {
-        val movieIds = searchRepository.getMovieIdsBySearch(search)
-        val movies = movieRepository.getMoviesByIds(movieIds).toList()
-        val searches = getAllSearchesUseCase()
-        return SearchHistory(searches, movies)
-    }
+    /**
+     * Get movies by recent search id.
+     */
+    suspend fun getMovies(searchId: Int): List<Movie> = getMoviesUseCase(searchId)
 }

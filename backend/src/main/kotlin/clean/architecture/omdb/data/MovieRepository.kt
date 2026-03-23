@@ -1,10 +1,15 @@
 package clean.architecture.omdb.data
 
 import clean.architecture.omdb.data.local.MovieCrudRepository
+import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
+import clean.architecture.omdb.data.local.entity.SearchToMovieReference
 import clean.architecture.omdb.data.mapper.toDomain
 import clean.architecture.omdb.domain.model.Movie
+import clean.architecture.omdb.domain.model.Search
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 /**
@@ -14,11 +19,15 @@ import org.springframework.stereotype.Component
  * that hides the database internal structure from domain services.
  *
  * @param movieDao the CRUD repository to get movies from a local database.
+ * @param referencesDao the CRUD repository to get movies as a search reference from a local database.
  */
 @Component
 class MovieRepository(
-    private val movieDao: MovieCrudRepository
+    private val movieDao: MovieCrudRepository,
+    private val referencesDao: SearchMoviesCrudRepository
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
      * Get all movies from the database.
@@ -47,4 +56,26 @@ class MovieRepository(
      */
     suspend fun getMoviesByIds(movieIds: Flow<Int>): Flow<Movie> = movieDao
         .findAllById(movieIds).map { it.toDomain() }
+
+    /**
+     * Get all movie ids associated with a specific search id.
+     *
+     * @param search the search domain model.
+     *
+     * @return the flow that emits domain [Movie] models.
+     */
+    fun getMovieIdsBySearch(search: Search): Flow<Int> = referencesDao
+        .getReferencesBySearchId(search.id)
+        .map { reference -> reference.movieId }
+
+    /**
+     * Associate movie ids with a specific search id.
+     *
+     * @param search the search domain model.
+     */
+    suspend fun saveMovieIdsForSearch(search: Search, movieIds: List<Int>) {
+        val references = movieIds.map { SearchToMovieReference(searchId = search.id, movieId = it) }
+        val entities = referencesDao.saveAll(references)
+        logger.info("Saved ${entities.count()} references for search ${search.query}")
+    }
 }

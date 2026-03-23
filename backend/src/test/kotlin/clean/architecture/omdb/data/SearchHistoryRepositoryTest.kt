@@ -3,14 +3,12 @@ package clean.architecture.omdb.data
 import clean.architecture.omdb.data.local.SearchHistoryCrudRepository
 import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
 import clean.architecture.omdb.data.local.entity.SearchEntity
-import clean.architecture.omdb.data.local.entity.SearchToMovieReference
 import clean.architecture.omdb.data.mapper.toDomain
 import clean.architecture.omdb.data.mapper.toEntity
 import clean.architecture.omdb.domain.model.Search
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -84,59 +82,5 @@ class SearchHistoryRepositoryTest {
         // Then
         assertEquals(entity.toDomain(), result)
         assertEquals(search.toEntity(), slot.captured)
-    }
-
-    @Test
-    fun `when getting movies ids, given search, then return saved ids`() = runTest {
-        // Given
-        val search = Search.empty().copy(id = 1, query = "test-query")
-        val reference1 = SearchToMovieReference(searchId = 1, movieId = 1)
-        val reference2 = SearchToMovieReference(searchId = 1, movieId = 2)
-        val references = flowOf(reference1, reference2)
-        coEvery { referencesDao.getReferencesBySearchId(1) } returns references
-
-        // When
-        val result = repository.getMovieIdsBySearch(search).toList()
-
-        // Then
-        assertEquals(listOf(1, 2), result)
-    }
-
-    @Test
-    fun `when saving movies ids, given search, then save references`() = runTest {
-        // Given
-        val search = Search.empty().copy(id = 1, query = "test-query")
-        val slot = slot<List<SearchToMovieReference>>()
-        coEvery { referencesDao.saveAll(capture(slot)) } returns emptyFlow()
-
-        // When
-        repository.saveMovieIdsForSearch(search = search, movieIds = listOf(5, 6))
-
-        // Then
-        val expected = listOf(
-            SearchToMovieReference(searchId = 1, movieId = 5),
-            SearchToMovieReference(searchId = 1, movieId = 6)
-        )
-        assertEquals(expected, slot.captured)
-    }
-
-    @Test
-    fun `when updating movies ids, given some ids already saved, then save only new ids`() = runTest {
-        // Given
-        val search = Search.empty().copy(id = 1)
-        val references = flowOf(
-            SearchToMovieReference(searchId = 1, movieId = 2),
-            SearchToMovieReference(searchId = 1, movieId = 3)
-        )
-        val slot = slot<List<SearchToMovieReference>>()
-        coEvery { referencesDao.getReferencesBySearchId(1) } returns references
-        coEvery { referencesDao.saveAll(capture(slot)) } returns emptyFlow()
-
-        // When
-        repository.updateMovieIdsForSearch(search, listOf(2, 3, 4)) // only 4 is new
-
-        // Then
-        val expected = listOf(SearchToMovieReference(searchId = 1, movieId = 4))
-        assertEquals(expected, slot.captured)
     }
 }

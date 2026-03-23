@@ -17,5 +17,5 @@ interface SearchMoviesCrudRepository : CoroutineCrudRepository<SearchToMovieRefe
      *
      * @return the flow emitting all references for the given search ID.
      */
-    suspend fun getReferencesBySearchId(searchId: Int): Flow<SearchToMovieReference>
+    fun getReferencesBySearchId(searchId: Int): Flow<SearchToMovieReference>
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
  * @param searchRepository the search history repository.
  */
 @Component
-class GetAllSearchesUseCase(
+class GetSearchHistoryUseCase(
     private val searchRepository: SearchHistoryRepository
 ) {
 
