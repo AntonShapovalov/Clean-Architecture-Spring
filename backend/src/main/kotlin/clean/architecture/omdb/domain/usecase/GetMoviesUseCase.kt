@@ -34,7 +34,7 @@ class GetMoviesUseCase(
         val search = searchRepository.getSearchById(searchId) ?: return emptyList()
         when {
             search.isExpired() -> updateSearch(search)
-            !searchRepository.searchHasMovieIds(search) -> newSearch(search)
+            searchRepository.searchIsEmpty(search) -> newSearch(search)
         }
         val movieIds = movieRepository.getMovieIdsBySearch(search)
         return movieRepository.getMoviesByIds(movieIds).toList()

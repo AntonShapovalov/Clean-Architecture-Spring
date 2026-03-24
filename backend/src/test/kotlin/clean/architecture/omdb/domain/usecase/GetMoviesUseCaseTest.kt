@@ -55,89 +55,19 @@ class GetMoviesUseCaseTest {
             query = title,
             updatedDate = LocalDateTime.now().minusMonths(2)
         )
-        val movieIds = listOf(1, 2)
-        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
 
         val slot = slot<Search>()
         coEvery { searchRepository.getSearchById(searchId) } returns search
-        coEvery { apiService.loadMovies(title) } returns movieIds
-        coEvery { searchRepository.saveSearch(capture(slot)) } answers { slot.captured }
-        coEvery { movieRepository.getMovieIdsBySearch(search) } returns movieIds.asFlow()
-        coEvery { movieRepository.getMoviesByIds(any()) } returns movies.asFlow()
-
-        // When
-        val result = useCase(searchId)
-
-        // Then
-        assertEquals(movies, result)
-        assertTrue(slot.captured.updatedDate > LocalDateTime.now().minusSeconds(10))
-    }
-
-    @Test
-    fun `when getting movies, given new search (not expired, no movie ids), then load and save movies`() = runTest {
-        // Given
-        val searchId = 1
-        val title = "test movie title"
-        val search = Search.empty().copy(id = searchId, query = title)
-        val movieIds = listOf(1, 2)
-        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
-
-        coEvery { searchRepository.getSearchById(searchId) } returns search
-        coEvery { searchRepository.searchHasMovieIds(search) } returns false
-        coEvery { apiService.loadMovies(title) } returns movieIds
-        coEvery { movieRepository.saveMovieIdsForSearch(search, movieIds) } returns Unit
-        coEvery { movieRepository.getMovieIdsBySearch(search) } returns movieIds.asFlow()
-        coEvery { movieRepository.getMoviesByIds(any()) } returns movies.asFlow()
-
-        // When
-        val result = useCase(searchId)
-
-        // Then
-        assertEquals(movies, result)
-        coVerify { apiService.loadMovies(title) }
-        coVerify { movieRepository.saveMovieIdsForSearch(search, movieIds) }
-    }
-
-    @Test
-    fun `when getting movies, given new search with no results from api, then do not save anything`() = runTest {
-        // Given
-        val searchId = 1
-        val title = "test movie title"
-        val search = Search.empty().copy(id = searchId, query = title)
-
-        coEvery { searchRepository.getSearchById(searchId) } returns search
-        coEvery { searchRepository.searchHasMovieIds(search) } returns false
         coEvery { apiService.loadMovies(title) } returns emptyList()
+        coEvery { searchRepository.saveSearch(capture(slot)) } answers { slot.captured }
         coEvery { movieRepository.getMovieIdsBySearch(search) } returns emptyFlow()
         coEvery { movieRepository.getMoviesByIds(any()) } returns emptyFlow()
 
         // When
-        val result = useCase(searchId)
+        useCase(searchId)
 
         // Then
-        assertTrue(result.isEmpty())
-        coVerify(exactly = 0) { movieRepository.saveMovieIdsForSearch(any(), any()) }
-    }
-
-    @Test
-    fun `when search is not expired and has movie ids, then return movies from repository`() = runTest {
-        // Given
-        val searchId = 1
-        val search = Search.empty().copy(id = searchId)
-        val movieIds = listOf(1, 2)
-        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
-
-        coEvery { searchRepository.getSearchById(searchId) } returns search
-        coEvery { searchRepository.searchHasMovieIds(search) } returns true
-        coEvery { movieRepository.getMovieIdsBySearch(search) } returns movieIds.asFlow()
-        coEvery { movieRepository.getMoviesByIds(any()) } returns movies.asFlow()
-
-        // When
-        val result = useCase(searchId)
-
-        // Then
-        assertEquals(movies, result)
-        coVerify(exactly = 0) { apiService.loadMovies(any()) }
+        assertTrue(slot.captured.updatedDate > LocalDateTime.now().minusSeconds(10))
     }
 
     @Test
@@ -194,5 +124,69 @@ class GetMoviesUseCaseTest {
 
         // Then
         coVerify(exactly = 0) { movieRepository.saveMovieIdsForSearch(any(), any()) }
+    }
+
+    @Test
+    fun `when search is empty (not expired, no movie ids), then load and save movies`() = runTest {
+        // Given
+        val searchId = 1
+        val title = "test movie title"
+        val search = Search.empty().copy(id = searchId, query = title)
+        val movieIds = listOf(1, 2)
+
+        coEvery { searchRepository.getSearchById(searchId) } returns search
+        coEvery { searchRepository.searchIsEmpty(search) } returns true
+        coEvery { apiService.loadMovies(title) } returns movieIds
+        coEvery { movieRepository.saveMovieIdsForSearch(search, movieIds) } returns Unit
+        coEvery { movieRepository.getMovieIdsBySearch(search) } returns movieIds.asFlow()
+        coEvery { movieRepository.getMoviesByIds(any()) } returns emptyFlow()
+
+        // When
+        useCase(searchId)
+
+        // Then
+        coVerify { apiService.loadMovies(title) }
+        coVerify { movieRepository.saveMovieIdsForSearch(search, movieIds) }
+    }
+
+    @Test
+    fun `when search is empty with no results from api, then do not save anything`() = runTest {
+        // Given
+        val searchId = 1
+        val title = "test movie title"
+        val search = Search.empty().copy(id = searchId, query = title)
+
+        coEvery { searchRepository.getSearchById(searchId) } returns search
+        coEvery { searchRepository.searchIsEmpty(search) } returns true
+        coEvery { apiService.loadMovies(title) } returns emptyList()
+        coEvery { movieRepository.getMovieIdsBySearch(search) } returns emptyFlow()
+        coEvery { movieRepository.getMoviesByIds(any()) } returns emptyFlow()
+
+        // When
+        useCase(searchId)
+
+        // Then
+        coVerify(exactly = 0) { movieRepository.saveMovieIdsForSearch(any(), any()) }
+    }
+
+    @Test
+    fun `when search is not expired and has movie ids, then return movies from repository`() = runTest {
+        // Given
+        val searchId = 1
+        val search = Search.empty().copy(id = searchId)
+        val movieIdsFlow = listOf(1, 2).asFlow()
+        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
+
+        coEvery { searchRepository.getSearchById(searchId) } returns search
+        coEvery { searchRepository.searchIsEmpty(search) } returns false
+        coEvery { movieRepository.getMovieIdsBySearch(search) } returns movieIdsFlow
+        coEvery { movieRepository.getMoviesByIds(movieIdsFlow) } returns movies.asFlow()
+
+        // When
+        val result = useCase(searchId)
+
+        // Then
+        assertEquals(movies, result)
+        coVerify(exactly = 0) { apiService.loadMovies(any()) }
     }
 }

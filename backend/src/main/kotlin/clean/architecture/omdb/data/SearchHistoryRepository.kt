@@ -76,7 +76,7 @@ class SearchHistoryRepository(
      * Checks if the given search has associated movie IDs in the database.
      *
      * @param search the search domain model to be checked.
-     * @return true if the search has associated movie IDs, false otherwise.
+     * @return false if the search has associated movie IDs, true otherwise.
      */
-    suspend fun searchHasMovieIds(search: Search): Boolean = referencesDao.existsById(search.id)
+    suspend fun searchIsEmpty(search: Search): Boolean = !referencesDao.existsById(search.id)
 }
