@@ -1,6 +1,5 @@
 package clean.architecture.omdb.data
 
-import clean.architecture.omdb.coroutines.DispatchersProvider
 import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.mapper.toEntity
 import clean.architecture.omdb.data.remote.ApiClient
@@ -11,7 +10,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -22,12 +20,8 @@ class ApiServiceTest {
 
     private val apiClient = mockk<ApiClient>()
     private val repository = mockk<MovieCrudRepository>()
-    private val testDispatcher = UnconfinedTestDispatcher()
-    private val dispatchers = mockk<DispatchersProvider> {
-        coEvery { io } returns testDispatcher
-    }
 
-    private val service = ApiService(apiClient, repository, dispatchers)
+    private val service = ApiService(apiClient, repository)
 
     @AfterEach
     fun tearDown() {

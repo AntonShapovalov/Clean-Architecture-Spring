@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
  * This class allows replacing background dispatchers for unit and integration testing.
  */
 @Component
-class DispatchersProvider {
+class DispatcherProvider {
 
     /**
      * Get the IO dispatcher.

@@ -4,12 +4,12 @@ import kotlinx.coroutines.Dispatchers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class DispatchersProviderTest {
+class DispatcherProviderTest {
 
     @Test
     fun `when getting IO dispatcher, given provider, then return IO coroutines dispatcher`() {
         // Given
-        val provider = DispatchersProvider()
+        val provider = DispatcherProvider()
 
         // When
         val dispatcher = provider.io

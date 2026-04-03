@@ -44,14 +44,16 @@ class GetMoviesUseCase(
         val movieIds = apiService.loadMovies(search.query)
         searchRepository.saveSearch(search.copy(updatedDate = LocalDateTime.now()))
         val existingMovieIds = movieRepository.getMovieIdsBySearch(search).toList()
-        val newMoviesIds = movieIds.filter { movieId -> !existingMovieIds.contains(movieId) }
-        if (newMoviesIds.isNotEmpty()) {
-            movieRepository.saveMovieIdsForSearch(search, newMoviesIds)
-        }
+        val newMovieIds = movieIds.filter { movieId -> !existingMovieIds.contains(movieId) }
+        saveMovieIds(search, newMovieIds)
     }
 
     private suspend fun newSearch(search: Search) {
         val movieIds = apiService.loadMovies(search.query)
+        saveMovieIds(search, movieIds)
+    }
+
+    private suspend fun saveMovieIds(search: Search, movieIds: List<Int>) {
         if (movieIds.isNotEmpty()) {
             movieRepository.saveMovieIdsForSearch(search, movieIds)
         }

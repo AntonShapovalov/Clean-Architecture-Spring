@@ -1,20 +1,29 @@
 package clean.architecture.omdb.domain
 
+import clean.architecture.omdb.coroutines.DispatcherProvider
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.usecase.GetMoviesUseCase
 import clean.architecture.omdb.domain.usecase.GetSearchHistoryUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchServiceTest {
 
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val dispatcherProvider = mockk<DispatcherProvider> {
+        coEvery { io } returns testDispatcher
+    }
     private val getSearchHistoryUseCase = mockk<GetSearchHistoryUseCase>()
     private val getMoviesUseCase = mockk<GetMoviesUseCase>()
-    private val searchService = SearchService(getSearchHistoryUseCase, getMoviesUseCase)
+
+    private val searchService = SearchService(dispatcherProvider, getSearchHistoryUseCase, getMoviesUseCase)
 
     @Test
     fun `when getting search history, given list, then return saved searches`() = runTest {
