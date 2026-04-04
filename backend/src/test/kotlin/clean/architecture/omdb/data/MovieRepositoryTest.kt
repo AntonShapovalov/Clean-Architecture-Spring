@@ -5,7 +5,7 @@ import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
 import clean.architecture.omdb.data.local.entity.MovieEntity
 import clean.architecture.omdb.data.local.entity.SearchToMovieReference
 import clean.architecture.omdb.domain.model.Movie
-import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testSearch
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
@@ -86,7 +86,7 @@ class MovieRepositoryTest {
     @Test
     fun `when getting movies ids, given search, then return saved ids`() = runTest {
         // Given
-        val search = Search.empty().copy(id = 1, query = "test-query")
+        val search = testSearch().copy(id = 1, query = "test-query")
         val reference1 = SearchToMovieReference(searchId = 1, movieId = 1)
         val reference2 = SearchToMovieReference(searchId = 1, movieId = 2)
         val references = flowOf(reference1, reference2)
@@ -102,7 +102,7 @@ class MovieRepositoryTest {
     @Test
     fun `when saving movies ids, given search, then save references`() = runTest {
         // Given
-        val search = Search.empty().copy(id = 1, query = "test-query")
+        val search = testSearch().copy(id = 1, query = "test-query")
         val slot = slot<List<SearchToMovieReference>>()
         coEvery { referencesDao.saveAll(capture(slot)) } returns emptyFlow()
 

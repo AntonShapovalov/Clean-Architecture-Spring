@@ -3,8 +3,9 @@ package clean.architecture.omdb.domain.usecase
 import clean.architecture.omdb.data.ApiService
 import clean.architecture.omdb.data.MovieRepository
 import clean.architecture.omdb.data.SearchHistoryRepository
-import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testMovie
+import clean.architecture.omdb.domain.model.testSearch
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -50,7 +51,7 @@ class GetMoviesUseCaseTest {
         // Given
         val searchId = 1
         val title = "test movie title"
-        val search = Search.empty().copy(
+        val search = testSearch().copy(
             id = searchId,
             query = title,
             updatedDate = LocalDateTime.now().minusMonths(2)
@@ -77,7 +78,7 @@ class GetMoviesUseCaseTest {
         val title = "test movie title"
         val existingMovieIds = listOf(1, 2, 3)
         val movieIdsFromApi = listOf(2, 3, 4) // 4 is new
-        val search = Search.empty().copy(
+        val search = testSearch().copy(
             id = searchId,
             query = title,
             updatedDate = LocalDateTime.now().minusMonths(2)
@@ -107,7 +108,7 @@ class GetMoviesUseCaseTest {
         val title = "test movie title"
         val existingMovieIds = listOf(1, 2, 3)
         val movieIdsFromApi = listOf(1, 2)
-        val search = Search.empty().copy(
+        val search = testSearch().copy(
             id = searchId,
             query = title,
             updatedDate = LocalDateTime.now().minusMonths(2)
@@ -131,7 +132,7 @@ class GetMoviesUseCaseTest {
         // Given
         val searchId = 1
         val title = "test movie title"
-        val search = Search.empty().copy(id = searchId, query = title)
+        val search = testSearch().copy(id = searchId, query = title)
         val movieIds = listOf(1, 2)
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
@@ -154,7 +155,7 @@ class GetMoviesUseCaseTest {
         // Given
         val searchId = 1
         val title = "test movie title"
-        val search = Search.empty().copy(id = searchId, query = title)
+        val search = testSearch().copy(id = searchId, query = title)
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
         coEvery { searchRepository.searchIsEmpty(search) } returns true
@@ -173,9 +174,9 @@ class GetMoviesUseCaseTest {
     fun `when search is not expired and has movie ids, then return movies from repository`() = runTest {
         // Given
         val searchId = 1
-        val search = Search.empty().copy(id = searchId)
+        val search = testSearch().copy(id = searchId)
         val movieIdsFlow = listOf(1, 2).asFlow()
-        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
+        val movies = listOf(testMovie().copy(id = 1), testMovie().copy(id = 2))
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
         coEvery { searchRepository.searchIsEmpty(search) } returns false

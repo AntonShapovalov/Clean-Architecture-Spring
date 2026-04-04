@@ -24,18 +24,4 @@ data class Search(
         val now = LocalDateTime.now()
         return updatedDate.plusMonths(1).isBefore(now)
     }
-
-    /**
-     * Companion helper object.
-     */
-    companion object {
-        /**
-         * Creates an empty [Search] instance useful for testing.
-         */
-        fun empty() = Search(
-            id = 0,
-            query = "",
-            updatedDate = LocalDateTime.now()
-        )
-    }
 }

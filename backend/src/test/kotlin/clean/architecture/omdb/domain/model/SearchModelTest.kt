@@ -10,7 +10,7 @@ class SearchModelTest {
     fun `when checking expiration, given old search, then return true`() {
         // Given
         val twoMonthsAgo = LocalDateTime.now().minusMonths(2)
-        val search = Search.empty().copy(updatedDate = twoMonthsAgo)
+        val search = testSearch().copy(updatedDate = twoMonthsAgo)
 
         // When
         val result = search.isExpired()
@@ -23,7 +23,7 @@ class SearchModelTest {
     fun `when checking expiration, given recent search, then return false`() {
         // Given
         val oneWeekAgo = LocalDateTime.now().minusWeeks(1)
-        val search = Search.empty().copy(updatedDate = oneWeekAgo)
+        val search = testSearch().copy(updatedDate = oneWeekAgo)
 
         // When
         val result = search.isExpired()

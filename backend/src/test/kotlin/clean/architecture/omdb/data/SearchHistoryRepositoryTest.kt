@@ -5,7 +5,7 @@ import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
 import clean.architecture.omdb.data.local.entity.SearchEntity
 import clean.architecture.omdb.data.mapper.toDomain
 import clean.architecture.omdb.data.mapper.toEntity
-import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testSearch
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
@@ -71,7 +71,7 @@ class SearchHistoryRepositoryTest {
     @Test
     fun `when saving search, given domain search, then return saved entity`() = runTest {
         // Given
-        val search = Search.empty().copy(id = 1, query = "test-query")
+        val search = testSearch().copy(id = 1, query = "test-query")
         val entity = SearchEntity.empty().copy(query = "test-query")
         val slot = slot<SearchEntity>()
         coEvery { searchDao.save(capture(slot)) } returns entity

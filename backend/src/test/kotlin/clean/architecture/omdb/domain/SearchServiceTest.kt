@@ -1,8 +1,8 @@
 package clean.architecture.omdb.domain
 
 import clean.architecture.omdb.coroutines.DispatcherProvider
-import clean.architecture.omdb.domain.model.Movie
-import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testMovie
+import clean.architecture.omdb.domain.model.testSearch
 import clean.architecture.omdb.domain.usecase.GetMoviesUseCase
 import clean.architecture.omdb.domain.usecase.GetSearchHistoryUseCase
 import io.mockk.coEvery
@@ -28,7 +28,7 @@ class SearchServiceTest {
     @Test
     fun `when getting search history, given list, then return saved searches`() = runTest {
         // Given
-        val searches = listOf(Search.empty().copy(id = 1), Search.empty().copy(id = 2))
+        val searches = listOf(testSearch().copy(id = 1), testSearch().copy(id = 2))
         coEvery { getSearchHistoryUseCase() } returns searches
 
         // When
@@ -41,7 +41,7 @@ class SearchServiceTest {
     @Test
     fun `when getting movies, given list, then return saved movies`() = runTest {
         // Given
-        val movies = listOf(Movie.empty().copy(id = 1), Movie.empty().copy(id = 2))
+        val movies = listOf(testMovie().copy(id = 1), testMovie().copy(id = 2))
         coEvery { getMoviesUseCase(1) } returns movies
 
         // When
