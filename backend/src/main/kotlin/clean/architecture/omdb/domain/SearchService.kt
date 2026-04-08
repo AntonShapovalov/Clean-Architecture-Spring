@@ -5,6 +5,7 @@ import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.usecase.GetMoviesUseCase
 import clean.architecture.omdb.domain.usecase.GetSearchHistoryUseCase
+import clean.architecture.omdb.domain.usecase.SaveSearchUseCase
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 
@@ -19,9 +20,19 @@ import org.springframework.stereotype.Service
 @Service
 class SearchService(
     private val dispatcher: DispatcherProvider,
+    private val saveSearchUseCase: SaveSearchUseCase,
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
     private val getMoviesUseCase: GetMoviesUseCase
 ) {
+
+    /**
+     * Save a search to history.
+     *
+     * @param query the search query.
+     */
+    suspend fun saveSearch(query: String) = withContext(dispatcher.io) {
+        saveSearchUseCase(query)
+    }
 
     /**
      * Get all searches from history.

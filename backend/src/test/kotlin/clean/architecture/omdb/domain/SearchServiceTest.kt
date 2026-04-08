@@ -5,7 +5,9 @@ import clean.architecture.omdb.domain.model.testMovie
 import clean.architecture.omdb.domain.model.testSearch
 import clean.architecture.omdb.domain.usecase.GetMoviesUseCase
 import clean.architecture.omdb.domain.usecase.GetSearchHistoryUseCase
+import clean.architecture.omdb.domain.usecase.SaveSearchUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -20,10 +22,29 @@ class SearchServiceTest {
     private val dispatcherProvider = mockk<DispatcherProvider> {
         coEvery { io } returns testDispatcher
     }
+    private val saveSearchUseCase = mockk<SaveSearchUseCase>()
     private val getSearchHistoryUseCase = mockk<GetSearchHistoryUseCase>()
     private val getMoviesUseCase = mockk<GetMoviesUseCase>()
 
-    private val searchService = SearchService(dispatcherProvider, getSearchHistoryUseCase, getMoviesUseCase)
+    private val searchService = SearchService(
+        dispatcher = dispatcherProvider,
+        saveSearchUseCase = saveSearchUseCase,
+        getSearchHistoryUseCase = getSearchHistoryUseCase,
+        getMoviesUseCase = getMoviesUseCase
+    )
+
+    @Test
+    fun `when saving search, given query, then call repository to save search`() = runTest {
+        // Given
+        val query = "test query"
+        coEvery { saveSearchUseCase(query) } returns Unit
+
+        // When
+        searchService.saveSearch(query)
+
+        // Then
+        coVerify { saveSearchUseCase(query) }
+    }
 
     @Test
     fun `when getting search history, given list, then return saved searches`() = runTest {
