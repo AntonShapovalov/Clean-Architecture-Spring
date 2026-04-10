@@ -6,9 +6,9 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 class GetSearchHistoryUseCaseTest {
 

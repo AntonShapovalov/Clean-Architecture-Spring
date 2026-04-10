@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -96,7 +95,7 @@ class MovieRepositoryTest {
         val result = repository.getMovieIdsBySearch(search).toList()
 
         // Then
-        Assertions.assertEquals(listOf(1, 2), result)
+        assertEquals(listOf(1, 2), result)
     }
 
     @Test
@@ -114,6 +113,6 @@ class MovieRepositoryTest {
             SearchToMovieReference(searchId = 1, movieId = 5),
             SearchToMovieReference(searchId = 1, movieId = 6)
         )
-        Assertions.assertEquals(expected, slot.captured)
+        assertEquals(expected, slot.captured)
     }
 }

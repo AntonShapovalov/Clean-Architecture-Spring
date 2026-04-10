@@ -1,4 +1,4 @@
-package clean.architecture.omdb.domain
+package clean.architecture.omdb.service
 
 import clean.architecture.omdb.coroutines.DispatcherProvider
 import clean.architecture.omdb.domain.model.Movie
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
  * The service also manages background operations with appropriate dispatchers.
  *
  * @param dispatcher the coroutines dispatcher provider.
+ * @param saveSearchUseCase the use case to save a search to history.
  * @param getSearchHistoryUseCase the use case to get all searches from history.
  * @param getMoviesUseCase the use case to get movies by recent search id.
  */
@@ -43,6 +44,8 @@ class SearchService(
 
     /**
      * Get movies by recent search id.
+     *
+     * @param searchId the internal search id.
      */
     suspend fun getMovies(searchId: Int): List<Movie> = withContext(dispatcher.io) {
         getMoviesUseCase(searchId)

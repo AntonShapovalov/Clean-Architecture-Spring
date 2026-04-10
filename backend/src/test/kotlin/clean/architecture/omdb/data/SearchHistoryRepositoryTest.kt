@@ -12,9 +12,9 @@ import io.mockk.slot
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SearchHistoryRepositoryTest {

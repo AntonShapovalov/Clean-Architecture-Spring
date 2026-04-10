@@ -1,8 +1,8 @@
 package clean.architecture.omdb.coroutines
 
 import kotlinx.coroutines.Dispatchers
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class DispatcherProviderTest {
 
