@@ -12,8 +12,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchServiceTest {
@@ -56,7 +56,7 @@ class SearchServiceTest {
         val result = searchService.getSearchHistory()
 
         // Then
-        Assertions.assertEquals(searches, result)
+        assertEquals(searches, result)
     }
 
     @Test
@@ -69,6 +69,6 @@ class SearchServiceTest {
         val result = searchService.getMovies(1)
 
         // Then
-        Assertions.assertEquals(movies, result)
+        assertEquals(movies, result)
     }
 }

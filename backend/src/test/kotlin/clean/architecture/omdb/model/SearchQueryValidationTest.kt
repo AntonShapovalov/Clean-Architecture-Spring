@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class SearchQueryTest {
+class SearchQueryValidationTest {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
@@ -20,6 +20,33 @@ class SearchQueryTest {
 
         // Then
         assertTrue(violations.isEmpty())
+    }
+
+    @Test
+    fun `when raw query contains spaces, then it should trim query`() {
+        // Given
+        val request = SearchQuery("    test query   ")
+
+        // When
+        val violations = validator.validate(request)
+
+        // Then
+        assertEquals("test query", request.query)
+        assertTrue(violations.isEmpty())
+    }
+
+    @Test
+    fun `when trimmed value is too short, then size violation exists`() {
+        // Given
+        val request = SearchQuery("    a1")
+
+        // When
+        val violations = validator.validate(request)
+
+        // Then
+        assertEquals("a1", request.query)
+        assertEquals(1, violations.size)
+        assertEquals("Query must be between 3 and 29 characters", violations.first().message)
     }
 
     @Test
