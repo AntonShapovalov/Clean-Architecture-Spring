@@ -28,6 +28,8 @@ class GetMoviesUseCase(
      * If search is expired or movies are not loaded yet,
      * update search and get new movies from remote API.
      *
+     * @param searchId the internal search id.
+     *
      * @return list of all movies.
      */
     suspend operator fun invoke(searchId: Int): List<Movie> {

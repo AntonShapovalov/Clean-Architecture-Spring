@@ -56,8 +56,8 @@ class GetMoviesUseCaseTest {
             query = title,
             updatedDate = LocalDateTime.now().minusMonths(2)
         )
-
         val slot = slot<Search>()
+
         coEvery { searchRepository.getSearchById(searchId) } returns search
         coEvery { apiService.loadMovies(title) } returns emptyList()
         coEvery { searchRepository.saveSearch(capture(slot)) } answers { slot.captured }
