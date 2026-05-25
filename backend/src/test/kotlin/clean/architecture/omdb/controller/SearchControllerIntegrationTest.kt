@@ -1,5 +1,7 @@
 package clean.architecture.omdb.controller
 
+import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.exception.ErrorMessage
 import clean.architecture.omdb.exception.GlobalExceptionHandler
 import clean.architecture.omdb.model.SearchQuery
 import clean.architecture.omdb.service.SearchService
@@ -11,8 +13,12 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ProblemDetail
 import org.springframework.test.web.reactive.server.WebTestClient
-import kotlin.test.assertTrue
+import java.net.URI
+import java.time.LocalDateTime
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @WebFluxTest(controllers = [SearchController::class])
 @Import(GlobalExceptionHandler::class)
@@ -40,37 +46,75 @@ class SearchControllerIntegrationTest {
     }
 
     @Test
-    fun `when posting blank search query, then should return 400 status with problem details`() {
-        webTestClient.post()
+    fun `when posting blank search query, then should return problem details with 400 status`() {
+        // When
+        val problemDetail = webTestClient.post()
             .uri("/api/search")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(SearchQuery(" "))
             .exchange()
             .expectStatus().isBadRequest
-            .expectBody()
-            .jsonPath("$.title").isEqualTo("Invalid Request Content")
-            .jsonPath("$.detail").isEqualTo("Validation failed")
-            .jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
-            .jsonPath("$.type").isEqualTo("/api/problems/validation-error")
-            .jsonPath("$.timestamp").exists()
-            .jsonPath("$.requestId").exists()
-            .jsonPath("$.errors").isArray
-            .jsonPath("$.errors[*].message").value<List<String>> {
-                assertTrue(it.contains("Query must not be blank"))
-                assertTrue(it.contains("Query must be between 3 and 29 characters"))
-            }
+            .expectBody(ProblemDetail::class.java)
+            .returnResult()
+            .responseBody
+
+        // Then
+        assertNotNull(problemDetail)
+        assertEquals("Invalid Request Content", problemDetail.title)
+        assertEquals("Validation failed", problemDetail.detail)
+        assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
+        assertEquals(URI.create("/api/problems/validation-error"), problemDetail.type)
+        assertNotNull(problemDetail.properties?.get("timestamp"))
+        assertNotNull(problemDetail.properties?.get("requestId"))
+        val errors = problemDetail.properties?.get("errors") as List<*>
+        val messages = errors.map { it as Map<*, *> }.map {
+            ErrorMessage(it["field"].toString(), it["message"].toString())
+        }
+        val expectedMessage = ErrorMessage("query", "Query must not be blank")
+        assertEquals(1, messages.size)
+        assertEquals(messages, listOf(expectedMessage))
     }
 
     @Test
-    fun `when requesting non-existent endpoint, then should return 404 status with problem details`() {
-        webTestClient.get()
+    fun `when requesting non-existent endpoint, then should return problem details with 404 status`() {
+        // When
+        val problemDetail = webTestClient.get()
             .uri("/api/non-existent")
             .exchange()
             .expectStatus().isNotFound
-            .expectBody()
-            .jsonPath("$.status").isEqualTo(HttpStatus.NOT_FOUND.value())
-            .jsonPath("$.title").isEqualTo("Not Found")
-            .jsonPath("$.timestamp").exists()
-            .jsonPath("$.requestId").exists()
+            .expectBody(ProblemDetail::class.java)
+            .returnResult()
+            .responseBody
+
+        // Then
+        assertNotNull(problemDetail)
+        assertEquals(HttpStatus.NOT_FOUND.value(), problemDetail.status)
+        assertEquals("Not Found", problemDetail.title)
+        assertNotNull(problemDetail.properties?.get("timestamp"))
+        assertNotNull(problemDetail.properties?.get("requestId"))
+    }
+
+    @Test
+    fun `when getting search history, then should return history list`() {
+        // Given
+        val now = LocalDateTime.now()
+        val history = listOf(
+            Search(1, "test query 1", now),
+            Search(2, "test query 2", now)
+        )
+        coEvery { searchService.getSearchHistory() } returns history
+
+        // When
+        val responseBody = webTestClient.get()
+            .uri("/api/search/history")
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBodyList(Search::class.java)
+            .returnResult()
+            .responseBody
+
+        // Then
+        assertEquals(history, responseBody)
     }
 }

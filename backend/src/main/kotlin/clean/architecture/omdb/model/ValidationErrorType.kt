@@ -10,7 +10,7 @@ import clean.architecture.omdb.controller.ProblemTypesController
  * @param status the HTTP status code.
  * @param description the error description.
  */
-data class ValidationError(
+data class ValidationErrorType(
     val type: String,
     val title: String,
     val status: Int,
