@@ -1,4 +1,9 @@
 # Clean Architecture for Spring
+
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/AntonShapovalov/Clean-Architecture-Spring/actions/workflows/push-artifacts.yml)
+[![Test Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 The project demonstrates `how to` use Spring Boot, Clean Architecture, and Kotlin Coroutines to build a reactive web application.
 
 > [!NOTE]
@@ -42,7 +47,7 @@ Overall, the application architecture provides a solid foundation for building c
 * The presentation layer only displays data and passes user input to the domain layer
 
 #### Test Coverage
-The layered structure of the application allows testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers can be additionally covered with integration and end-to-end tests. 
+The layered structure enables testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers can be additionally covered with integration and end-to-end tests. 
 In this way, the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage) of the application can reach 100% while keeping tests fast, simple, and reliable.
 
 #### Clean Architecture Layers
