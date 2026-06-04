@@ -18,4 +18,13 @@ interface SearchMoviesCrudRepository : CoroutineCrudRepository<SearchToMovieRefe
      * @return the flow emitting all references for the given search ID.
      */
     fun getReferencesBySearchId(searchId: Int): Flow<SearchToMovieReference>
+
+    /**
+     * Check if at least one reference exist for the given search id.
+     *
+     * @param searchId the id of search.
+     *
+     * @return true if reference exists, false otherwise.
+     */
+    suspend fun existsBySearchId(searchId: Int): Boolean
 }

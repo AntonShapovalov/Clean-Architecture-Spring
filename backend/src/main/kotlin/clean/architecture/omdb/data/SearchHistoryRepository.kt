@@ -9,7 +9,8 @@ import clean.architecture.omdb.domain.model.Search
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.LocalDate
 
 /**
  * The repository to manage local data of search history.
@@ -57,8 +58,12 @@ class SearchHistoryRepository(
      *
      * @return the domain [Search] model.
      */
-    suspend fun saveSearch(query: String): Search {
-        val entity = SearchEntity(query = query, updatedDate = LocalDateTime.now())
+    suspend fun saveSearchByQuery(query: String): Search {
+        val entity = SearchEntity(
+            query = query,
+            updatedDate = LocalDate.now(),
+            lastSeenAt = Instant.now()
+        )
         return searchDao.save(entity).toDomain()
     }
 
@@ -76,7 +81,8 @@ class SearchHistoryRepository(
      * Checks if the given search has associated movie IDs in the database.
      *
      * @param search the search domain model to be checked.
+     *
      * @return false if the search has associated movie IDs, true otherwise.
      */
-    suspend fun searchIsEmpty(search: Search): Boolean = !referencesDao.existsById(search.id)
+    suspend fun searchIsEmpty(search: Search): Boolean = !referencesDao.existsBySearchId(search.id)
 }

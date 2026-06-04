@@ -18,9 +18,8 @@ class GetSearchHistoryUseCase(
     /**
      * Get all searches from history.
      *
-     * @return list of all searches.
+     * @return list of all searches sorted by recent seeing date descending.
      */
-    suspend operator fun invoke(): List<Search> {
-        return searchRepository.getAllSearches().toList().sortedByDescending { it.updatedDate }
-    }
+    suspend operator fun invoke(): List<Search> = searchRepository
+        .getAllSearches().toList().sortedByDescending { it.lastSeenAt }
 }

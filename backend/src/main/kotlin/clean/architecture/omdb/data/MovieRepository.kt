@@ -76,6 +76,6 @@ class MovieRepository(
     suspend fun saveMovieIdsForSearch(search: Search, movieIds: List<Int>) {
         val references = movieIds.map { SearchToMovieReference(searchId = search.id, movieId = it) }
         val entities = referencesDao.saveAll(references)
-        logger.info("Saved ${entities.count()} references for search ${search.query}")
+        logger.info("Saved ${entities.count()} movies references for search `${search.query}`")
     }
 }

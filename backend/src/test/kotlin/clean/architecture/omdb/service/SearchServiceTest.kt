@@ -37,19 +37,20 @@ class SearchServiceTest {
     fun `when saving search, given query, then call repository to save search`() = runTest {
         // Given
         val query = "test query"
-        coEvery { saveSearchUseCase(query) } returns Unit
+        coEvery { saveSearchUseCase(query) } returns 1
 
         // When
-        searchService.saveSearch(query)
+        val result = searchService.saveSearch(query)
 
         // Then
+        assertEquals(1, result)
         coVerify { saveSearchUseCase(query) }
     }
 
     @Test
     fun `when getting search history, given list, then return saved searches`() = runTest {
         // Given
-        val searches = listOf(testSearch().copy(id = 1), testSearch().copy(id = 2))
+        val searches = listOf(testSearch(id = 1), testSearch(id = 2))
         coEvery { getSearchHistoryUseCase() } returns searches
 
         // When
@@ -62,7 +63,7 @@ class SearchServiceTest {
     @Test
     fun `when getting movies, given list, then return saved movies`() = runTest {
         // Given
-        val movies = listOf(testMovie().copy(id = 1), testMovie().copy(id = 2))
+        val movies = listOf(testMovie(id = 1), testMovie(id = 2))
         coEvery { getMoviesUseCase(1) } returns movies
 
         // When

@@ -1,6 +1,7 @@
 package clean.architecture.omdb.controller
 
-import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testMovie
+import clean.architecture.omdb.domain.model.testSearch
 import clean.architecture.omdb.model.SearchQuery
 import clean.architecture.omdb.service.SearchService
 import io.mockk.coEvery
@@ -10,7 +11,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
-import java.time.LocalDateTime
 
 class SearchControllerTest {
 
@@ -22,7 +22,7 @@ class SearchControllerTest {
         // Given
         val query = "test query"
         val searchQuery = SearchQuery(query)
-        coEvery { searchService.saveSearch(query) } returns Unit
+        coEvery { searchService.saveSearch(query) } returns 1
 
         // When
         val response = controller.search(searchQuery)
@@ -36,8 +36,8 @@ class SearchControllerTest {
     fun `when getting search history, then call service and return history`() = runTest {
         // Given
         val history = listOf(
-            Search(1, "query 1", LocalDateTime.now()),
-            Search(2, "query 2", LocalDateTime.now())
+            testSearch(id = 1).copy(query = "query 1"),
+            testSearch(id = 2).copy(query = "query 2")
         )
         coEvery { searchService.getSearchHistory() } returns history
 
@@ -48,5 +48,21 @@ class SearchControllerTest {
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(history, response.body)
         coVerify { searchService.getSearchHistory() }
+    }
+
+    @Test
+    fun `when getting movies by search id, then call service and return movies`() = runTest {
+        // Given
+        val searchId = 123
+        val movies = listOf(testMovie(id = 1), testMovie(id = 2))
+        coEvery { searchService.getMovies(searchId) } returns movies
+
+        // When
+        val response = controller.getMovies(searchId)
+
+        // Then
+        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(movies, response.body)
+        coVerify { searchService.getMovies(searchId) }
     }
 }

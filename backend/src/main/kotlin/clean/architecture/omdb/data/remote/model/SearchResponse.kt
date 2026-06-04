@@ -29,35 +29,5 @@ data class SearchResponse(
         @get:JsonProperty("imdbID") val imdbID: String,
         @get:JsonProperty("Type") val type: String,
         @get:JsonProperty("Poster") val poster: String
-    ) {
-        /**
-         * Companion helper object.
-         */
-        companion object {
-            /**
-             * Creates an empty [Movie] instance useful for testing.
-             */
-            fun empty() = Movie(
-                title = "",
-                year = "",
-                imdbID = "",
-                type = "",
-                poster = ""
-            )
-        }
-    }
-
-    /**
-     * Companion helper object.
-     */
-    companion object {
-        /**
-         * Creates an empty [SearchResponse] instance useful for testing.
-         */
-        fun empty() = SearchResponse(
-            movies = emptyList(),
-            totalResults = 0,
-            response = ""
-        )
-    }
+    )
 }

@@ -1,6 +1,6 @@
 package clean.architecture.omdb.data.local
 
-import clean.architecture.omdb.data.local.entity.SearchEntity
+import clean.architecture.omdb.data.local.entity.testSearchEntity
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +28,7 @@ class SearchHistoryCrudRepositoryIntegrationTest {
     @Test
     fun `when saving search, given entity, then saved id is not null`() = runTest {
         // Given
-        val entity = SearchEntity.empty().copy(query = "test-query")
+        val entity = testSearchEntity().copy(query = "test-query")
 
         // When
         val saved = repository.save(entity)
@@ -41,7 +41,7 @@ class SearchHistoryCrudRepositoryIntegrationTest {
     @Test
     fun `when getting search, given query, then result is not null`() = runTest {
         // Given
-        val entity = SearchEntity.empty().copy(query = "saved-test-query")
+        val entity = testSearchEntity().copy(query = "saved-test-query")
         repository.save(entity)
 
         // When

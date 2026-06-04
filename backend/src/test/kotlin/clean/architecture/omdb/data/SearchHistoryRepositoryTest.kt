@@ -3,6 +3,7 @@ package clean.architecture.omdb.data
 import clean.architecture.omdb.data.local.SearchHistoryCrudRepository
 import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
 import clean.architecture.omdb.data.local.entity.SearchEntity
+import clean.architecture.omdb.data.local.entity.testSearchEntity
 import clean.architecture.omdb.data.mapper.toDomain
 import clean.architecture.omdb.data.mapper.toEntity
 import clean.architecture.omdb.domain.model.testSearch
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -26,8 +28,8 @@ class SearchHistoryRepositoryTest {
     @Test
     fun `when getting all searches, given saved data, then return domain models`() = runTest {
         // Given
-        val entity1 = SearchEntity.empty().copy(id = 1)
-        val entity2 = SearchEntity.empty().copy(id = 2)
+        val entity1 = testSearchEntity(id = 1)
+        val entity2 = testSearchEntity(id = 2)
         coEvery { searchDao.findAll() } returns flowOf(entity1, entity2)
 
         // When
@@ -41,7 +43,7 @@ class SearchHistoryRepositoryTest {
     @Test
     fun `when getting search by query, given saved data, then return domain model`() = runTest {
         // Given
-        val entity = SearchEntity.empty().copy(id = 1, query = "test-query")
+        val entity = testSearchEntity(id = 1).copy(query = "test-query")
         coEvery { searchDao.getSearchHistoryByQuery("test-query") } returns entity
 
         // When
@@ -54,25 +56,25 @@ class SearchHistoryRepositoryTest {
     @Test
     fun `when saving search, given query, then return saved entity`() = runTest {
         // Given
-        val entity = SearchEntity.empty().copy(query = "test-query")
+        val entity = testSearchEntity(id = 1).copy(query = "test-query")
         val slot = slot<SearchEntity>()
         coEvery { searchDao.save(capture(slot)) } returns entity
 
         // When
-        val result = repository.saveSearch("test-query")
+        val result = repository.saveSearchByQuery("test-query")
 
         // Then
         assertEquals(entity.toDomain(), result)
         assertEquals("test-query", slot.captured.query)
-        assertTrue(slot.captured.updatedDate <= LocalDateTime.now())
-        assertTrue(slot.captured.updatedDate > LocalDateTime.now().minusSeconds(10))
+        assertEquals(slot.captured.updatedDate, LocalDate.now())
+        assertTrue(slot.captured.lastSeenAt > Instant.now().minusSeconds(10))
     }
 
     @Test
     fun `when saving search, given domain search, then return saved entity`() = runTest {
         // Given
-        val search = testSearch().copy(id = 1, query = "test-query")
-        val entity = SearchEntity.empty().copy(query = "test-query")
+        val search = testSearch(id = 1).copy(query = "test-query")
+        val entity = testSearchEntity(id = 1).copy(query = "test-query")
         val slot = slot<SearchEntity>()
         coEvery { searchDao.save(capture(slot)) } returns entity
 

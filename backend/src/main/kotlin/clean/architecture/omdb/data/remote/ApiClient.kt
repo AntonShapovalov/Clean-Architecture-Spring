@@ -19,7 +19,7 @@ class ApiClient(
     private val webClient = WebClient.create(properties.baseUrl)
 
     /**
-     * Get movies list from the external API.
+     * Get the list of movies from the external API.
      *
      * @param query the search query.
      */

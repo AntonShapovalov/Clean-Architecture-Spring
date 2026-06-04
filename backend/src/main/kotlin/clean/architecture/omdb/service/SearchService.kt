@@ -30,8 +30,10 @@ class SearchService(
      * Save a search to history.
      *
      * @param query the search query.
+     *
+     * @return the internal search id.
      */
-    suspend fun saveSearch(query: String) = withContext(dispatcher.io) {
+    suspend fun saveSearch(query: String): Int = withContext(dispatcher.io) {
         saveSearchUseCase(query)
     }
 

@@ -10,7 +10,8 @@ import clean.architecture.omdb.domain.model.Search
 fun Search.toEntity() = SearchEntity(
     id = id,
     query = query,
-    updatedDate = updatedDate
+    updatedDate = updatedDate,
+    lastSeenAt = lastSeenAt
 )
 
 /**
@@ -19,5 +20,6 @@ fun Search.toEntity() = SearchEntity(
 fun SearchEntity.toDomain() = Search(
     id = id ?: 0,
     query = query,
-    updatedDate = updatedDate
+    updatedDate = updatedDate,
+    lastSeenAt = lastSeenAt
 )

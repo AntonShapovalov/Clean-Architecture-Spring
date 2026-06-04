@@ -3,7 +3,8 @@ package clean.architecture.omdb.data
 import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.mapper.toEntity
 import clean.architecture.omdb.data.remote.ApiClient
-import clean.architecture.omdb.data.remote.model.SearchResponse
+import clean.architecture.omdb.data.remote.model.testMovieResponse
+import clean.architecture.omdb.data.remote.model.testSearchResponse
 import io.mockk.Called
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -31,12 +32,12 @@ class ApiServiceTest {
     @Test
     fun `when load movies, given API response, then save them to database`() = runTest {
         // Given
-        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
-        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
+        val movie = testMovieResponse().copy(imdbID = "test-id")
+        val searchResponse = testSearchResponse().copy(movies = listOf(movie))
         val entity = movie.toEntity()
 
         coEvery { apiClient.search("test") } returns searchResponse
-        coEvery { repository.getMovieByImdbId("test-id") } returns null
+        coEvery { repository.existsMovieByImdbId("test-id") } returns false
         coEvery { repository.save(entity) } returns entity
 
         // When
@@ -50,12 +51,12 @@ class ApiServiceTest {
     @Test
     fun `when load movies, given movie is saved already, then should not save it`() = runTest {
         // Given
-        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
-        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
+        val movie = testMovieResponse().copy(imdbID = "test-id")
+        val searchResponse = testSearchResponse().copy(movies = listOf(movie))
         val entity = movie.toEntity()
 
         coEvery { apiClient.search("test") } returns searchResponse
-        coEvery { repository.getMovieByImdbId("test-id") } returns entity
+        coEvery { repository.existsMovieByImdbId("test-id") } returns true
 
         // When
         val ids = service.loadMovies("test")

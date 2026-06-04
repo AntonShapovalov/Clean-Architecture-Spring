@@ -18,10 +18,10 @@ import jakarta.validation.constraints.Size
  * @param rawQuery the search query.
  */
 @GroupSequence(
-    SearchQuery::class,
     SearchQuery.NotBlankGroup::class,
     SearchQuery.SizeGroup::class,
-    SearchQuery.PatternGroup::class
+    SearchQuery.PatternGroup::class,
+    SearchQuery::class
 )
 class SearchQuery @JsonCreator constructor(
     @JsonProperty("query")

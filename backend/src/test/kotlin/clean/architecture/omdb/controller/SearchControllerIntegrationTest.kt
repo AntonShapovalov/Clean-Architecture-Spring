@@ -1,6 +1,9 @@
 package clean.architecture.omdb.controller
 
+import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
+import clean.architecture.omdb.domain.model.testMovie
+import clean.architecture.omdb.domain.model.testSearch
 import clean.architecture.omdb.exception.ErrorMessage
 import clean.architecture.omdb.exception.GlobalExceptionHandler
 import clean.architecture.omdb.model.SearchQuery
@@ -16,7 +19,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.ProblemDetail
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.net.URI
-import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -33,7 +35,7 @@ class SearchControllerIntegrationTest {
     @Test
     fun `when posting valid search query, then should return no content`() {
         // Given
-        coEvery { searchService.saveSearch("test query") } returns Unit
+        coEvery { searchService.saveSearch("test query") } returns 1
 
         // When & Then
         webTestClient.post()
@@ -66,6 +68,7 @@ class SearchControllerIntegrationTest {
         assertEquals(URI.create("/api/problems/validation-error"), problemDetail.type)
         assertNotNull(problemDetail.properties?.get("timestamp"))
         assertNotNull(problemDetail.properties?.get("requestId"))
+
         val errors = problemDetail.properties?.get("errors") as List<*>
         val messages = errors.map { it as Map<*, *> }.map {
             ErrorMessage(it["field"].toString(), it["message"].toString())
@@ -97,10 +100,9 @@ class SearchControllerIntegrationTest {
     @Test
     fun `when getting search history, then should return history list`() {
         // Given
-        val now = LocalDateTime.now()
         val history = listOf(
-            Search(1, "test query 1", now),
-            Search(2, "test query 2", now)
+            testSearch(id = 1).copy(query = "test query 1"),
+            testSearch(id = 2).copy(query = "test query 2"),
         )
         coEvery { searchService.getSearchHistory() } returns history
 
@@ -116,5 +118,26 @@ class SearchControllerIntegrationTest {
 
         // Then
         assertEquals(history, responseBody)
+    }
+
+    @Test
+    fun `when getting movies by search id, then should return movies list`() {
+        // Given
+        val searchId = 123
+        val movies = listOf(testMovie(id = 1), testMovie(id = 2))
+        coEvery { searchService.getMovies(searchId) } returns movies
+
+        // When
+        val responseBody = webTestClient.get()
+            .uri("/api/search/$searchId/movies")
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBodyList(Movie::class.java)
+            .returnResult()
+            .responseBody
+
+        // Then
+        assertEquals(movies, responseBody)
     }
 }

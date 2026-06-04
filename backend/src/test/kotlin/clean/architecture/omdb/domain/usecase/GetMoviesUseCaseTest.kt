@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -50,11 +50,10 @@ class GetMoviesUseCaseTest {
     fun `when getting movies, given expired search, then update search`() = runTest {
         // Given
         val searchId = 1
-        val title = "test movie title"
-        val search = testSearch().copy(
-            id = searchId,
+        val title = "test title"
+        val search = testSearch(id = searchId).copy(
             query = title,
-            updatedDate = LocalDateTime.now().minusMonths(2)
+            updatedDate = LocalDate.now().minusMonths(2)
         )
         val slot = slot<Search>()
 
@@ -68,20 +67,19 @@ class GetMoviesUseCaseTest {
         useCase(searchId)
 
         // Then
-        assertTrue(slot.captured.updatedDate > LocalDateTime.now().minusSeconds(10))
+        assertEquals(slot.captured.updatedDate, LocalDate.now())
     }
 
     @Test
     fun `when updating movies ids, given some ids already saved, then save only new ids`() = runTest {
         // Given
         val searchId = 1
-        val title = "test movie title"
+        val title = "test title"
         val existingMovieIds = listOf(1, 2, 3)
         val movieIdsFromApi = listOf(2, 3, 4) // 4 is new
-        val search = testSearch().copy(
-            id = searchId,
+        val search = testSearch(id = searchId).copy(
             query = title,
-            updatedDate = LocalDateTime.now().minusMonths(2)
+            updatedDate = LocalDate.now().minusMonths(2)
         )
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
@@ -105,13 +103,12 @@ class GetMoviesUseCaseTest {
     fun `when updating movies ids, given all ids already saved, then do not save anything`() = runTest {
         // Given
         val searchId = 1
-        val title = "test movie title"
+        val title = "test title"
         val existingMovieIds = listOf(1, 2, 3)
         val movieIdsFromApi = listOf(1, 2)
-        val search = testSearch().copy(
-            id = searchId,
+        val search = testSearch(id = searchId).copy(
             query = title,
-            updatedDate = LocalDateTime.now().minusMonths(2)
+            updatedDate = LocalDate.now().minusMonths(2)
         )
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
@@ -131,8 +128,11 @@ class GetMoviesUseCaseTest {
     fun `when search is empty (not expired, no movie ids), then load and save movies`() = runTest {
         // Given
         val searchId = 1
-        val title = "test movie title"
-        val search = testSearch().copy(id = searchId, query = title)
+        val title = "test title"
+        val search = testSearch(id = searchId).copy(
+            query = title,
+            updatedDate = LocalDate.now()
+        )
         val movieIds = listOf(1, 2)
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
@@ -154,8 +154,8 @@ class GetMoviesUseCaseTest {
     fun `when search is empty with no results from api, then do not save anything`() = runTest {
         // Given
         val searchId = 1
-        val title = "test movie title"
-        val search = testSearch().copy(id = searchId, query = title)
+        val title = "test title"
+        val search = testSearch(searchId).copy(query = title)
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
         coEvery { searchRepository.searchIsEmpty(search) } returns true
@@ -174,9 +174,9 @@ class GetMoviesUseCaseTest {
     fun `when search is not expired and has movie ids, then return movies from repository`() = runTest {
         // Given
         val searchId = 1
-        val search = testSearch().copy(id = searchId)
+        val search = testSearch(id = searchId)
         val movieIdsFlow = listOf(1, 2).asFlow()
-        val movies = listOf(testMovie().copy(id = 1), testMovie().copy(id = 2))
+        val movies = listOf(testMovie(id = 1), testMovie(id = 2))
 
         coEvery { searchRepository.getSearchById(searchId) } returns search
         coEvery { searchRepository.searchIsEmpty(search) } returns false

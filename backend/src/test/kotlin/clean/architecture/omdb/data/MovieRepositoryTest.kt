@@ -2,8 +2,8 @@ package clean.architecture.omdb.data
 
 import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
-import clean.architecture.omdb.data.local.entity.MovieEntity
 import clean.architecture.omdb.data.local.entity.SearchToMovieReference
+import clean.architecture.omdb.data.local.entity.testMovieEntity
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.testSearch
 import io.mockk.coEvery
@@ -27,8 +27,8 @@ class MovieRepositoryTest {
     @Test
     fun `when getting all movies, given db entities, then return domain models`() = runTest {
         // Given
-        val entity1 = MovieEntity.empty().copy(id = 1, imdbId = "test-1")
-        val entity2 = MovieEntity.empty().copy(id = 2, imdbId = "test-2")
+        val entity1 = testMovieEntity(id = 1).copy(imdbId = "test-1")
+        val entity2 = testMovieEntity(id = 2).copy(imdbId = "test-2")
         coEvery { movieDao.findAll() } returns flowOf(entity1, entity2)
 
         // When
@@ -47,7 +47,7 @@ class MovieRepositoryTest {
     @Test
     fun `when getting movie by id, given db entity, then return domain model`() = runTest {
         // Given
-        val entity = MovieEntity.empty().copy(id = 1, imdbId = "test-1")
+        val entity = testMovieEntity(id = 1).copy(imdbId = "test-1")
         coEvery { movieDao.findById(1) } returns entity
 
         // When
@@ -63,8 +63,8 @@ class MovieRepositoryTest {
     @Test
     fun `when getting movies by ids, given ids, then return domain models`() = runTest {
         // Given
-        val entity1 = MovieEntity.empty().copy(id = 1, imdbId = "test-1")
-        val entity2 = MovieEntity.empty().copy(id = 2, imdbId = "test-2")
+        val entity1 = testMovieEntity(id = 1).copy(imdbId = "test-1")
+        val entity2 = testMovieEntity(id = 2).copy(imdbId = "test-2")
         val entities = flowOf(entity1, entity2)
         val ids = flowOf(1, 2)
         coEvery { movieDao.findAllById(ids) } returns entities
@@ -85,7 +85,7 @@ class MovieRepositoryTest {
     @Test
     fun `when getting movies ids, given search, then return saved ids`() = runTest {
         // Given
-        val search = testSearch().copy(id = 1, query = "test-query")
+        val search = testSearch(id = 1)
         val reference1 = SearchToMovieReference(searchId = 1, movieId = 1)
         val reference2 = SearchToMovieReference(searchId = 1, movieId = 2)
         val references = flowOf(reference1, reference2)
@@ -101,7 +101,7 @@ class MovieRepositoryTest {
     @Test
     fun `when saving movies ids, given search, then save references`() = runTest {
         // Given
-        val search = testSearch().copy(id = 1, query = "test-query")
+        val search = testSearch(id = 1)
         val slot = slot<List<SearchToMovieReference>>()
         coEvery { referencesDao.saveAll(capture(slot)) } returns emptyFlow()
 

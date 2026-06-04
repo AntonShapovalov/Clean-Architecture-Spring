@@ -1,7 +1,8 @@
 package clean.architecture.omdb.data.remote
 
 import clean.architecture.omdb.config.OmdbApiProperties
-import clean.architecture.omdb.data.remote.model.SearchResponse
+import clean.architecture.omdb.data.remote.model.testMovieResponse
+import clean.architecture.omdb.data.remote.model.testSearchResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -29,8 +30,8 @@ class ApiClientIntegrationTest {
         val title = "testTitle"
         val properties = OmdbApiProperties(baseUrl = wiremockUrl, apiKey = key)
 
-        val movie = SearchResponse.Movie.empty().copy(title = title)
-        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
+        val movie = testMovieResponse().copy(title = title)
+        val searchResponse = testSearchResponse().copy(movies = listOf(movie))
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(searchResponse)
 

@@ -2,7 +2,8 @@ package clean.architecture.omdb.data
 
 import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.remote.ApiClient
-import clean.architecture.omdb.data.remote.model.SearchResponse
+import clean.architecture.omdb.data.remote.model.testMovieResponse
+import clean.architecture.omdb.data.remote.model.testSearchResponse
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
 import kotlinx.coroutines.flow.first
@@ -39,9 +40,8 @@ class ApiServiceIntegrationTest {
     @Test
     fun `when load movies, given API response, then save them to database`() = runTest {
         // Given
-        val movie = SearchResponse.Movie.empty().copy(imdbID = "test-id")
-        val searchResponse = SearchResponse.empty().copy(movies = listOf(movie))
-
+        val movie = testMovieResponse().copy(imdbID = "test-id")
+        val searchResponse = testSearchResponse().copy(movies = listOf(movie))
         coEvery { apiClient.search("test") } returns searchResponse
 
         // When

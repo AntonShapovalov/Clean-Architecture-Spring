@@ -5,7 +5,8 @@ import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.local.SearchHistoryCrudRepository
 import clean.architecture.omdb.data.local.SearchMoviesCrudRepository
 import clean.architecture.omdb.data.remote.ApiClient
-import clean.architecture.omdb.data.remote.model.SearchResponse
+import clean.architecture.omdb.data.remote.model.testMovieResponse
+import clean.architecture.omdb.data.remote.model.testSearchResponse
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,11 +67,11 @@ class SearchServiceIntegrationTest {
     fun `when saving a new search, then search history and movies are not empty`() = runTest {
         // Given
         val query = "Test query"
-        val apiMovie = SearchResponse.Movie.empty().copy(
+        val apiMovie = testMovieResponse().copy(
             title = "Test title",
             imdbID = "test123"
         )
-        val searchResponse = SearchResponse.empty().copy(
+        val searchResponse = testSearchResponse().copy(
             movies = listOf(apiMovie),
             response = "True",
             totalResults = 1
@@ -79,16 +80,45 @@ class SearchServiceIntegrationTest {
         coEvery { apiClient.search(query) } returns searchResponse
 
         // When
-        searchService.saveSearch(query)
+        val searchId = searchService.saveSearch(query)
 
         // Then
         val history = searchService.getSearchHistory()
-        val search = history.find { it.query == query }
+        val search = history.find { it.id == searchId && it.query == query }
         assertNotNull(search)
 
-        val movies = searchService.getMovies(search.id)
+        val movies = searchService.getMovies(searchId)
         assertEquals(1, movies.size)
         assertEquals("Test title", movies[0].title)
         assertEquals("test123", movies[0].imdbId)
+    }
+
+    @Test
+    fun `when getting movies, given two saved searches, then result is not empty`() = runTest {
+        // Given
+        val query1 = "Test query 1"
+        val query2 = "Test query 2"
+        val apiMovie1 = testMovieResponse().copy(imdbID = "test-123")
+        val apiMovie2 = testMovieResponse().copy(imdbID = "test-456")
+        val apiMovie3 = testMovieResponse().copy(imdbID = "test-789")
+        val searchResponse1 = testSearchResponse().copy(movies = listOf(apiMovie1, apiMovie2))
+        val searchResponse2 = testSearchResponse().copy(movies = listOf(apiMovie3))
+
+        coEvery { apiClient.search(query1) } returns searchResponse1
+        coEvery { apiClient.search(query2) } returns searchResponse2
+
+        val searchId1 = searchService.saveSearch(query1)
+        val searchId2 = searchService.saveSearch(query2)
+
+        // When
+        val movies1 = searchService.getMovies(searchId1)
+        val movies2 = searchService.getMovies(searchId2)
+
+        // Then
+        assertEquals(2, movies1.size)
+        assertEquals("test-123", movies1.first().imdbId)
+        assertEquals("test-456", movies1.last().imdbId)
+        assertEquals(1, movies2.size)
+        assertEquals("test-789", movies2.first().imdbId)
     }
 }

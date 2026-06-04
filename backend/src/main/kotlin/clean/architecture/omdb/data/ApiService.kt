@@ -30,8 +30,7 @@ class ApiService(
         val movieIds = ArrayList<Int>()
         val movies = apiClient.search(title).movies
         for (movie in movies) {
-            val entity = repository.getMovieByImdbId(movie.imdbID)
-            if (entity == null) {
+            if (!repository.existsMovieByImdbId(movie.imdbID)) {
                 val newEntity = repository.save(movie.toEntity())
                 movieIds.add(newEntity.id ?: 0)
             }

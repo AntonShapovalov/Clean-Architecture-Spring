@@ -7,7 +7,7 @@ import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 /**
  * The use case to get movies from a local repository or remote API.
@@ -44,7 +44,7 @@ class GetMoviesUseCase(
 
     private suspend fun updateSearch(search: Search) {
         val movieIds = apiService.loadMovies(search.query)
-        searchRepository.saveSearch(search.copy(updatedDate = LocalDateTime.now()))
+        searchRepository.saveSearch(search.copy(updatedDate = LocalDate.now()))
         val existingMovieIds = movieRepository.getMovieIdsBySearch(search).toList()
         val newMovieIds = movieIds.filter { movieId -> !existingMovieIds.contains(movieId) }
         saveMovieIds(search, newMovieIds)

@@ -1,6 +1,6 @@
 package clean.architecture.omdb.data.local
 
-import clean.architecture.omdb.data.local.entity.MovieEntity
+import clean.architecture.omdb.data.local.entity.testMovieEntity
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +12,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -28,7 +29,7 @@ class MovieCrudRepositoryIntegrationTest {
     @Test
     fun `when saving movie, given entity, then saved id is not null`() = runTest {
         // Given
-        val entity = MovieEntity.empty().copy(imdbId = "test-123")
+        val entity = testMovieEntity().copy(imdbId = "test-123")
 
         // When
         val saved = repository.save(entity)
@@ -39,16 +40,15 @@ class MovieCrudRepositoryIntegrationTest {
     }
 
     @Test
-    fun `when getting movie, given imdbID, then result is not null`() = runTest {
+    fun `when checking movie exists, given imdbID, then result is true`() = runTest {
         // Given
-        val entity = MovieEntity.empty().copy(imdbId = "test-567")
+        val entity = testMovieEntity().copy(imdbId = "test-567")
         repository.save(entity)
 
         // When
-        val result = repository.getMovieByImdbId("test-567")
+        val result = repository.existsMovieByImdbId("test-567")
 
         // Then
-        assertNotNull(result)
-        assertEquals("test-567", result.imdbId)
+        assertTrue(result)
     }
 }

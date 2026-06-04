@@ -10,11 +10,11 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 interface MovieCrudRepository : CoroutineCrudRepository<MovieEntity, Int> {
 
     /**
-     * Find movie by IMDB ID.
+     * Check if a movie exists by IMDB ID.
      *
      * @param imdbId the IMDB ID.
      *
-     * @return the movie entity or null if not found.
+     * @return true if a movie exists, false otherwise.
      */
-    suspend fun getMovieByImdbId(imdbId: String): MovieEntity?
+    suspend fun existsMovieByImdbId(imdbId: String): Boolean
 }
