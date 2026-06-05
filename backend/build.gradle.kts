@@ -78,5 +78,6 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    mustRunAfter(tasks.named("generateOpenApiDocs"))
 }
 
