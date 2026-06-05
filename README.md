@@ -20,7 +20,7 @@ For local development, the Spring Boot backend and Angular frontend can be start
 ```shell
 docker compose up --build
 ```
-* Open the browser and navigate to [http://localhost](http://localhost)
+* Open the browser and navigate to [http://localhost:80](http://localhost:80)
 
 #### Run Spring backend via IDE
 * Open the project in your IDE and run the `backend/src/main/kotlin/clean/architecture/omdb/OmdbApplication.kt` class
