@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p out
           cp -f backend/build/libs/*SNAPSHOT.jar out/backend.jar
-          cp -f backend/build/openapi.yaml out/openapi.yaml
+          cp -f backend/build/openapi/openapi.yaml out/openapi.yaml
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v4

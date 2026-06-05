@@ -67,6 +67,7 @@ dependencies {
 }
 
 openApi {
+    outputDir.set(layout.buildDirectory.dir("openapi"))
     outputFileName.set("openapi.yaml")
 }
 
@@ -78,6 +79,5 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    mustRunAfter(tasks.named("generateOpenApiDocs"))
 }
 
