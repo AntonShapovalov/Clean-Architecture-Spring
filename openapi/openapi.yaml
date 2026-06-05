@@ -1,0 +1,229 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/search": {
+      "post": {
+        "tags": [
+          "search-controller"
+        ],
+        "operationId": "search",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/{searchId}/movies": {
+      "get": {
+        "tags": [
+          "search-controller"
+        ],
+        "operationId": "getMovies",
+        "parameters": [
+          {
+            "name": "searchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/history": {
+      "get": {
+        "tags": [
+          "search-controller"
+        ],
+        "operationId": "getSearchHistory",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Search"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/problems/validation-error": {
+      "get": {
+        "tags": [
+          "problem-types-controller"
+        ],
+        "operationId": "validationError",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorType"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SearchQuery": {
+        "required": [
+          "query"
+        ],
+        "type": "object",
+        "properties": {
+          "query": {
+            "maxLength": 29,
+            "minLength": 3,
+            "pattern": "^[\\p{L}0-9 ]+$",
+            "type": "string"
+          }
+        }
+      },
+      "Unit": {
+        "type": "object"
+      },
+      "Movie": {
+        "required": [
+          "id",
+          "imdbId",
+          "poster",
+          "title",
+          "type",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "poster": {
+            "type": "string"
+          }
+        }
+      },
+      "Search": {
+        "required": [
+          "id",
+          "isExpired",
+          "lastSeenAt",
+          "query",
+          "updatedDate"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "query": {
+            "type": "string"
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isExpired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ValidationErrorType": {
+        "required": [
+          "description",
+          "status",
+          "title",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

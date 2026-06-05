@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "clean.architecture.omdb"
@@ -41,6 +42,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.6.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -62,6 +64,10 @@ dependencies {
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+}
+
+openApi {
+    outputFileName.set("openapi.yaml")
 }
 
 kotlin {

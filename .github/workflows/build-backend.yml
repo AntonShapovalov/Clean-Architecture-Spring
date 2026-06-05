@@ -34,17 +34,18 @@ jobs:
         run: echo "omdb.api-key=${{ secrets.OMDB_API_KEY }}" > backend/src/main/resources/secrets.properties
 
       - name: Build and validate
-        run: ./gradlew build detekt
+        run: ./gradlew build detekt generateOpenApiDocs
 
       - name: Prepare backend artifact
         run: |
           mkdir -p out
           cp -f backend/build/libs/*SNAPSHOT.jar out/backend.jar
+          cp -f backend/build/openapi.yaml out/openapi.yaml
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-jar
-          path: out/backend.jar
+          name: backend-artifacts
+          path: out/
           if-no-files-found: error
           retention-days: 3

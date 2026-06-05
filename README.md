@@ -34,6 +34,10 @@ ng serve
 ```
 * Click the link to open a browser and navigate to [http://localhost:4200](http://localhost:4200)
 
+### API Specification
+The API specification is available via Swagger UI when the backend is running: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+You can also find the static specification file here: [openapi/openapi.yaml](openapi/openapi.yaml)
+
 ### Key Points
 Overall, the application architecture provides a solid foundation for building clean and maintainable code. It emphasizes the importance of separating concerns, isolating core business logic, and making the code testable and reusable:
 * The business logic is isolated in the domain layer 

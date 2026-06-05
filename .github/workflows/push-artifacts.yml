@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - "release/**"
       - "docs/**"
+      - "openapi/**"
       - "**.md"
   pull_request:
     branches: ["master"]
@@ -41,7 +42,7 @@ jobs:
       - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
-          name: backend-jar
+          name: backend-artifacts
           path: _download/backend
 
       - name: Download frontend artifact
@@ -53,7 +54,9 @@ jobs:
       - name: Move artifacts into release/
         run: |
           mkdir -p release
+          mkdir -p openapi
           cp -f _download/backend/backend.jar release/backend.jar
+          cp -f _download/backend/openapi.yaml openapi/openapi.yaml
           cp -f _download/frontend/frontend.zip release/frontend.zip
 
       - name: Commit and push
@@ -61,7 +64,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          git add release/backend.jar release/frontend.zip
+          git add release/backend.jar release/frontend.zip openapi/openapi.yaml
 
           if git diff --cached --quiet; then
             echo "No artifact changes to commit."
