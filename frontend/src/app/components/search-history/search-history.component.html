@@ -1,0 +1,21 @@
+<div class="search-history-container">
+  <div class="search-form">
+    <input
+      (keydown.enter)="onSearch()"
+      [formControl]="queryControl"
+      aria-label="Search query"
+      placeholder="Search query"
+      type="text"
+    />
+    <button (click)="onSearch()" [disabled]="queryControl.invalid">Search</button>
+  </div>
+
+  <h3>Recent Searches</h3>
+  <ul class="history-list">
+    @for (item of history(); track item.id) {
+      <li>{{ item.query }} <small>({{ item.updatedDate }})</small></li>
+    } @empty {
+      <li>No recent searches</li>
+    }
+  </ul>
+</div>
