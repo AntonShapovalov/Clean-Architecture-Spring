@@ -1,7 +1,12 @@
 package clean.architecture.omdb.controller
 
 import clean.architecture.omdb.model.ValidationErrorType
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,9 +21,24 @@ class ProblemTypesController {
     /**
      * Problem details for validation errors.
      */
-    @GetMapping("/validation-error")
-    fun validationError(): ValidationErrorType = ValidationErrorType(
-        type = "/api/problems/validation-error",
+    @Operation(
+        summary = "Get validation error type",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully retrieved validation error type",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ValidationErrorType::class)
+                    )
+                ]
+            )
+        ]
+    )
+    @GetMapping("/validation-error-type")
+    fun getValidationErrorType(): ValidationErrorType = ValidationErrorType(
+        type = "/api/problems/validation-error-type",
         title = "Invalid Request Content",
         status = HttpStatus.BAD_REQUEST.value(),
         description = "The request content failed validation."

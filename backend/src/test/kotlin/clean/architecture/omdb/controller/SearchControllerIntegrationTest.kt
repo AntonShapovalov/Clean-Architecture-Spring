@@ -52,7 +52,7 @@ class SearchControllerIntegrationTest {
         // When
         val problemDetail = webTestClient.post()
             .uri("/api/search")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
             .bodyValue(SearchQuery(" "))
             .exchange()
             .expectStatus().isBadRequest
@@ -85,6 +85,7 @@ class SearchControllerIntegrationTest {
             .uri("/api/non-existent")
             .exchange()
             .expectStatus().isNotFound
+            .expectHeader().contentType(MediaType.APPLICATION_PROBLEM_JSON)
             .expectBody(ProblemDetail::class.java)
             .returnResult()
             .responseBody
