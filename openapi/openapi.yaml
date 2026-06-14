@@ -16,6 +16,7 @@
         "tags": [
           "search-controller"
         ],
+        "summary": "Save a search query",
         "operationId": "search",
         "requestBody": {
           "content": {
@@ -28,12 +29,25 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK",
+          "204": {
+            "description": "Search query saved successfully"
+          },
+          "400": {
+            "description": "Invalid request",
             "content": {
-              "*/*": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Unit"
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -46,6 +60,7 @@
         "tags": [
           "search-controller"
         ],
+        "summary": "Get movies by search ID",
         "operationId": "getMovies",
         "parameters": [
           {
@@ -60,14 +75,44 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successfully retrieved movies",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Movie"
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Search with the given ID was not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -80,12 +125,13 @@
         "tags": [
           "search-controller"
         ],
+        "summary": "Get search history",
         "operationId": "getSearchHistory",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successfully retrieved search history",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -94,21 +140,42 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/problems/validation-error": {
+    "/api/problems/validation-error-type": {
       "get": {
         "tags": [
           "problem-types-controller"
         ],
-        "operationId": "validationError",
+        "summary": "Get validation error type",
+        "operationId": "getValidationErrorType",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successfully retrieved validation error type",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorType"
                 }
@@ -121,6 +188,35 @@
   },
   "components": {
     "schemas": {
+      "ProblemDetail": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string",
+            "format": "uri"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
       "SearchQuery": {
         "required": [
           "query"
@@ -134,9 +230,6 @@
             "type": "string"
           }
         }
-      },
-      "Unit": {
-        "type": "object"
       },
       "Movie": {
         "required": [
