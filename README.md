@@ -26,7 +26,7 @@ docker compose up --build
 * Open the project in your IDE and run the `backend/src/main/kotlin/clean/architecture/omdb/OmdbApplication.kt` class
 * Navigate to [http://localhost:8080](http://localhost:8080)
 
-#### Run Angular frontend via terminal
+#### Run Angular frontend via the terminal
 * Open a terminal window and navigate to the `frontend` folder
 * Run the dev server:
 ```shell
