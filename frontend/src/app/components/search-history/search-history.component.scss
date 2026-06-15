@@ -35,9 +35,24 @@ button {
   li {
     padding: 0.5rem 0;
     border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
 
     &:first-child {
       padding-top: 0;
+    }
+
+    .query {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .date {
+      flex-shrink: 0;
     }
   }
 }

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { Search } from '../../models/search.model';
 
 @Component({
   selector: 'app-search-history',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DatePipe],
   templateUrl: './search-history.component.html',
   styleUrl: './search-history.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -13,7 +13,10 @@
   <h3>Recent Searches</h3>
   <ul class="history-list">
     @for (item of history(); track item.id) {
-      <li>{{ item.query }} <small>({{ item.updatedDate }})</small></li>
+      <li>
+        <span class="query">{{ item.query }}</span>
+        <small class="date">{{ item.lastSeenAt | date:'short' }}</small>
+      </li>
     } @empty {
       <li>No recent searches</li>
     }
