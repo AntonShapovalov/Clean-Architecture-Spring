@@ -48,7 +48,9 @@ describe('SearchHistoryComponent', () => {
 
   it('should display history items in the template', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const items = compiled.querySelectorAll('.history-list li');
+    const items = compiled.querySelectorAll('.list-group-item');
+    // The empty state item is also a .list-group-item, but it's only shown when history is empty.
+    // In this test, history is mocked with 2 items.
     expect(items.length).toBe(2);
     expect(items[0].textContent).toContain('test 1');
     expect(items[1].textContent).toContain('test 2');
