@@ -8,7 +8,7 @@ The project demonstrates `how to` use Spring Boot, Clean Architecture, and Kotli
 
 > [!NOTE]
 > Work in progress...
-> The app is going to search for movies using the external [OMDB API](https://www.omdbapi.com) and save search history in the local database.
+> The app is going to search for movies using the external [OMDB API](https://www.omdbapi.com) and save search history to the local database.
 
 ### Install and Run
 For simplicity and demonstration purposes, the project contains both `backend` and `frontend` modules in one repository. [Docker](https://docs.docker.com/get-started/get-docker/) Compose starts both services and exposes the frontend via default port 80.
