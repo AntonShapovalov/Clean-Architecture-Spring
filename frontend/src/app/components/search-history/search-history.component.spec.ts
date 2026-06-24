@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SearchHistoryComponent } from './search-history.component';
-import { ApiService } from '../../services/api.service';
-import { of, throwError } from 'rxjs';
+import { SearchService } from '../../services/search-service';
 import { Search } from '../../models/search.model';
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { of, throwError } from 'rxjs';
+import { signal, Signal } from '@angular/core';
 
 describe('SearchHistoryComponent', () => {
   let component: SearchHistoryComponent;
   let fixture: ComponentFixture<SearchHistoryComponent>;
-  let apiServiceMock: {
-    getSearchHistory: Mock;
+  let searchServiceMock: {
+    loadHistory: Mock;
     saveSearch: Mock;
+    history: Signal<Search[]>;
   };
 
   const mockHistory: Search[] = [
@@ -20,15 +22,16 @@ describe('SearchHistoryComponent', () => {
   ];
 
   beforeEach(async () => {
-    apiServiceMock = {
-      getSearchHistory: vi.fn().mockReturnValue(of(mockHistory)),
-      saveSearch: vi.fn().mockReturnValue(of(undefined))
+    searchServiceMock = {
+      loadHistory: vi.fn().mockReturnValue(of(mockHistory)),
+      saveSearch: vi.fn().mockReturnValue(of(mockHistory)),
+      history: signal(mockHistory)
     };
 
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, SearchHistoryComponent],
       providers: [
-        { provide: ApiService, useValue: apiServiceMock }
+        { provide: SearchService, useValue: searchServiceMock }
       ]
     }).compileComponents();
 
@@ -41,9 +44,8 @@ describe('SearchHistoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load history on init', () => {
-    expect(apiServiceMock.getSearchHistory).toHaveBeenCalled();
-    expect(component['history']()).toEqual(mockHistory);
+  it('should call loadHistory on init', () => {
+    expect(searchServiceMock.loadHistory).toHaveBeenCalled();
   });
 
   it('should display history items in the template', () => {
@@ -57,43 +59,34 @@ describe('SearchHistoryComponent', () => {
   it('should not call saveSearch if query is invalid (too short)', () => {
     component['queryControl'].setValue('ab');
     component['onSearch']();
-    expect(apiServiceMock.saveSearch).not.toHaveBeenCalled();
+    expect(searchServiceMock.saveSearch).not.toHaveBeenCalled();
   });
 
-  it('should call saveSearch and reload history on valid search', () => {
+  it('should call saveSearch on valid search', () => {
     const newQuery = 'new search';
     component['queryControl'].setValue(newQuery);
 
-    // Reset call count from init
-    apiServiceMock.getSearchHistory.mockClear();
-
     component['onSearch']();
 
-    expect(apiServiceMock.saveSearch).toHaveBeenCalledWith({ query: newQuery });
-    expect(apiServiceMock.getSearchHistory).toHaveBeenCalled();
+    expect(searchServiceMock.saveSearch).toHaveBeenCalledWith({ query: newQuery });
     expect(component['queryControl'].value).toBe(''); // Should be reset
   });
 
   it('should handle error when loading history', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-      // Intentionally empty
-    });
-    apiServiceMock.getSearchHistory.mockReturnValue(throwError(() => new Error('API Error')));
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
+    searchServiceMock.loadHistory.mockReturnValue(throwError(() => new Error('Load error')));
 
-    // Trigger another load
-    component['loadHistory']();
+    component.ngOnInit();
 
     expect(consoleSpy).toHaveBeenCalledWith('Error loading history:', expect.any(Error));
     consoleSpy.mockRestore();
   });
 
   it('should handle error when saving search', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-      // Intentionally empty
-    });
-    apiServiceMock.saveSearch.mockReturnValue(throwError(() => new Error('Save Error')));
-
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
+    searchServiceMock.saveSearch.mockReturnValue(throwError(() => new Error('Save error')));
     component['queryControl'].setValue('valid query');
+
     component['onSearch']();
 
     expect(consoleSpy).toHaveBeenCalledWith('Error saving search:', expect.any(Error));

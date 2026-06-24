@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { ApiService } from '../../services/api.service';
-import { Search } from '../../models/search.model';
+import { SearchService } from '../../services/search-service';
 
 @Component({
   selector: 'app-search-history',
@@ -12,17 +11,19 @@ import { Search } from '../../models/search.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchHistoryComponent implements OnInit {
-  private readonly apiService = inject(ApiService);
+  private readonly searchService = inject(SearchService);
 
   protected readonly queryControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(3), Validators.maxLength(29)]
   });
 
-  protected readonly history = signal<Search[]>([]);
+  protected readonly history = this.searchService.history;
 
   ngOnInit(): void {
-    this.loadHistory();
+    this.searchService.loadHistory().subscribe({
+      error: (err) => console.error('Error loading history:', err),
+    });
   }
 
   protected onSearch(): void {
@@ -31,19 +32,9 @@ export class SearchHistoryComponent implements OnInit {
     }
 
     const query = this.queryControl.value;
-    this.apiService.saveSearch({ query }).subscribe({
-      next: () => {
-        this.queryControl.reset();
-        this.loadHistory();
-      },
-      error: (err) => console.error('Error saving search:', err)
+    this.searchService.saveSearch({ query }).subscribe({
+      error: (err) => console.error('Error saving search:', err),
     });
-  }
-
-  private loadHistory(): void {
-    this.apiService.getSearchHistory().subscribe({
-      next: (data) => this.history.set(data),
-      error: (err) => console.error('Error loading history:', err)
-    });
+    this.queryControl.reset();
   }
 }
