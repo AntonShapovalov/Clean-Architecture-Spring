@@ -1,8 +1,8 @@
-<div class="layout">
-  <aside class="sidebar">
-    <app-search-history />
-  </aside>
-  <main class="content">
-    <router-outlet />
-  </main>
-</div>
+<mat-sidenav-container class="layout">
+  <mat-sidenav mode="side" opened>
+    <app-search-history/>
+  </mat-sidenav>
+  <mat-sidenav-content class="content">
+    <router-outlet/>
+  </mat-sidenav-content>
+</mat-sidenav-container>

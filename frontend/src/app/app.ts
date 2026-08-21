@@ -1,10 +1,11 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SearchHistoryComponent } from './components/search-history/search-history.component';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {SearchHistoryComponent} from './components/search-history/search-history.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SearchHistoryComponent],
+  imports: [RouterOutlet, MatSidenavModule, SearchHistoryComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
