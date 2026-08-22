@@ -1,7 +1,7 @@
 <div class="search-history-container">
   <form (ngSubmit)="onSearch()" class="search-form">
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-label>Search query</mat-label>
+    <mat-form-field appearance="outline" class="search-field" hideRequiredMarker subscriptSizing="dynamic">
+      <mat-label>Movie title</mat-label>
       <input [errorStateMatcher]="neverErrorStateMatcher"
              [formControl]="queryControl"
              matInput
@@ -16,7 +16,7 @@
     @for (item of history(); track item.id) {
       <li>
         <span class="query">{{ item.query }}</span>
-        <small class="date">{{ item.lastSeenAt | date: 'short' }}</small>
+        <small class="date">{{ item.lastSeenAt | date: 'dd/MM/yy, h:mm:ss a' }}</small>
       </li>
     } @empty {
       <li>No recent searches</li>
