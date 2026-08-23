@@ -32,5 +32,13 @@ h3 {
     gap: 1rem;
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &.history-item {
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--mat-sys-surface-container-highest, rgba(0, 0, 0, 0.04));
+      }
+    }
   }
 }

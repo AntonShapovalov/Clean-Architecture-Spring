@@ -1,11 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, OnInit} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DatePipe} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {SearchService} from '../../services/search.service';
+import {Search} from '../../models/search.model';
 
 class NeverErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(): boolean {
@@ -20,6 +23,7 @@ class NeverErrorStateMatcher implements ErrorStateMatcher {
     DatePipe,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     FormsModule
   ],
@@ -37,7 +41,18 @@ export class SearchHistoryComponent implements OnInit {
     validators: [Validators.required, Validators.minLength(3), Validators.maxLength(29)]
   });
 
-  protected readonly history = this.searchService.history;
+  protected readonly queryFilter = toSignal(this.queryControl.valueChanges, {
+    initialValue: this.queryControl.value
+  });
+
+  protected readonly filteredHistory = computed(() => {
+    const filter = this.queryFilter().trim().toLowerCase();
+    const history = this.searchService.history();
+    if (!filter) {
+      return history;
+    }
+    return history.filter((item) => item.query.toLowerCase().includes(filter));
+  });
 
   ngOnInit(): void {
     this.searchService.loadHistory().subscribe({
@@ -45,15 +60,26 @@ export class SearchHistoryComponent implements OnInit {
     });
   }
 
+  protected onClear(): void {
+    this.queryControl.reset();
+  }
+
+  protected onSelect(item: Search): void {
+    this.queryControl.setValue(item.query);
+    this.search(item.query);
+  }
+
   protected onSearch(): void {
     if (this.queryControl.invalid) {
       return;
     }
+    this.search(this.queryControl.value);
+  }
 
-    const query = this.queryControl.value;
+  private search(query: string): void {
     this.searchService.saveSearch({query}).subscribe({
+      next: () => this.queryControl.reset(),
       error: (err) => console.error('Error saving search:', err),
     });
-    this.queryControl.reset();
   }
 }

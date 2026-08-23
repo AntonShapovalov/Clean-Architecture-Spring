@@ -7,14 +7,23 @@
              matInput
              type="text"
       />
+      @if (queryFilter()) {
+        <button (click)="onClear()"
+                aria-label="Clear search"
+                mat-icon-button
+                matSuffix
+                type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
     <button [disabled]="queryControl.invalid" matButton="filled" type="submit">Search</button>
   </form>
 
   <h3>Recent Searches</h3>
   <ul class="history-list">
-    @for (item of history(); track item.id) {
-      <li>
+    @for (item of filteredHistory(); track item.id) {
+      <li class="history-item" tabindex="0" (click)="onSelect(item)" (keydown.enter)="onSelect(item)">
         <span class="query">{{ item.query }}</span>
         <small class="date">{{ item.lastSeenAt | date: 'dd/MM/yy, h:mm:ss a' }}</small>
       </li>
