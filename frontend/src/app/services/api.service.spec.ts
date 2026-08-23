@@ -1,9 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { ApiService } from './api.service';
-import { Search, SearchQuery } from '../models/search.model';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {ApiService} from './api.service';
+import {Search, SearchQuery} from '../models/search.model';
+import {Movie} from '../models/movie.model';
+import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -31,7 +32,7 @@ describe('ApiService', () => {
 
   describe('saveSearch', () => {
     it('should POST to /api/search and return void', () => {
-      const query: SearchQuery = { query: 'test query' };
+      const query: SearchQuery = {query: 'test query'};
 
       service.saveSearch(query).subscribe(response => {
         expect(response).toBeNull();
@@ -40,15 +41,15 @@ describe('ApiService', () => {
       const req = httpMock.expectOne('/api/search');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(query);
-      req.flush(null, { status: 204, statusText: 'No Content' });
+      req.flush(null, {status: 204, statusText: 'No Content'});
     });
   });
 
   describe('getSearchHistory', () => {
     it('should GET from /api/search/history and return searches', () => {
       const mockHistory: Search[] = [
-        { id: 1, query: 'query 1', updatedDate: '2023-01-01', lastSeenAt: '2023-01-01T00:00:00Z', isExpired: false },
-        { id: 2, query: 'query 2', updatedDate: '2023-01-02', lastSeenAt: '2023-01-02T00:00:00Z', isExpired: false }
+        {id: 1, query: 'query 1', updatedDate: '2023-01-01', lastSeenAt: '2023-01-01T00:00:00Z', isExpired: false},
+        {id: 2, query: 'query 2', updatedDate: '2023-01-02', lastSeenAt: '2023-01-02T00:00:00Z', isExpired: false}
       ];
 
       service.getSearchHistory().subscribe(history => {
@@ -58,6 +59,22 @@ describe('ApiService', () => {
       const req = httpMock.expectOne('/api/search/history');
       expect(req.request.method).toBe('GET');
       req.flush(mockHistory);
+    });
+  });
+
+  describe('getMovies', () => {
+    it('should GET movies for a search', () => {
+      const movies: Movie[] = [
+        {id: 1, title: 'Inception', year: '2010', imdbId: 'tt1375666', type: 'movie', poster: 'poster.jpg'}
+      ];
+
+      service.getMovies(42).subscribe((response) => {
+        expect(response).toEqual(movies);
+      });
+
+      const req = httpMock.expectOne('/api/search/42/movies');
+      expect(req.request.method).toBe('GET');
+      req.flush(movies);
     });
   });
 });

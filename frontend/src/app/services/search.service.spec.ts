@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SearchService } from './search-service';
+import { SearchService } from './search.service';
 import { ApiService } from './api.service';
 import { of } from 'rxjs';
 import { Search, SearchQuery } from '../models/search.model';

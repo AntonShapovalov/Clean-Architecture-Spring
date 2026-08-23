@@ -1,0 +1,14 @@
+.movies-grid {
+  display: grid;
+  /* Card width matches the 280px height with 2:3 ratio */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 190px));
+  gap: 1rem;
+  justify-content: center;
+}
+
+.movie-poster {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: contain;
+}

@@ -1,7 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Search, SearchQuery } from '../models/search.model';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Search, SearchQuery} from '../models/search.model';
+import {Movie} from '../models/movie.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,5 +16,9 @@ export class ApiService {
 
   getSearchHistory(): Observable<Search[]> {
     return this.http.get<Search[]>('/api/search/history');
+  }
+
+  getMovies(searchId: number): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`/api/search/${searchId}/movies`);
   }
 }

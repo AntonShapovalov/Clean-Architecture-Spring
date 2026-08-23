@@ -5,7 +5,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {SearchService} from '../../services/search-service';
+import {SearchService} from '../../services/search.service';
 
 class NeverErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(): boolean {

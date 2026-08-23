@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SearchHistoryComponent} from './search-history.component';
-import {SearchService} from '../../services/search-service';
+import {SearchService} from '../../services/search.service';
 import {Search} from '../../models/search.model';
 import {beforeEach, describe, expect, it, Mock, vi} from 'vitest';
 import {of, throwError} from 'rxjs';
