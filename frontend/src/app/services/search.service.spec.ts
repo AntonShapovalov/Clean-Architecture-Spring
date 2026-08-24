@@ -93,4 +93,48 @@ describe('SearchService', () => {
       expect(result).toEqual(newHistory);
     });
   });
+
+  describe('updateSearch', () => {
+    it('should save search to API, update lastSeenAt in history without reordering, and set recentSearch to selected search', () => {
+      service.loadHistory().subscribe();
+      expect(service.history()).toEqual(mockHistory);
+      expect(service.recentSearch()).toEqual(mockHistory[0]);
+
+      const selectedSearch = mockHistory[1];
+      const fakeDate = '2026-08-24T12:00:00.000Z';
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(fakeDate));
+
+      service.updateSearch(selectedSearch).subscribe();
+
+      expect(apiServiceMock.saveSearch).toHaveBeenCalledWith({ query: selectedSearch.query });
+      expect(apiServiceMock.getSearchHistory).toHaveBeenCalledTimes(1);
+
+      const updatedHistory = service.history();
+      expect(updatedHistory.length).toBe(2);
+      expect(updatedHistory[0]).toEqual(mockHistory[0]);
+      expect(updatedHistory[1]).toEqual({
+        ...selectedSearch,
+        lastSeenAt: fakeDate
+      });
+      expect(service.recentSearch()).toEqual({
+        ...selectedSearch,
+        lastSeenAt: fakeDate
+      });
+
+      vi.useRealTimers();
+    });
+
+    it('should return updated history observable', () => {
+      service.loadHistory().subscribe();
+
+      const selectedSearch = mockHistory[1];
+      let result: Search[] = [];
+      service.updateSearch(selectedSearch).subscribe(h => result = h);
+
+      expect(result.length).toBe(2);
+      expect(result[1].id).toBe(selectedSearch.id);
+      expect(result[1].lastSeenAt).not.toBe(selectedSearch.lastSeenAt);
+    });
+  });
 });

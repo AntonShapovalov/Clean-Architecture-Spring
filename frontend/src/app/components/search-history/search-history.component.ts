@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, computed, inject, OnInit} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DatePipe} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
@@ -7,8 +7,9 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {Observable} from 'rxjs';
 import {SearchService} from '../../services/search.service';
-import {Search} from '../../models/search.model';
+import {Search, SearchQuery} from '../../models/search.model';
 
 class NeverErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(): boolean {
@@ -33,6 +34,7 @@ class NeverErrorStateMatcher implements ErrorStateMatcher {
 })
 export class SearchHistoryComponent implements OnInit {
   private readonly searchService = inject(SearchService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly neverErrorStateMatcher = new NeverErrorStateMatcher();
 
@@ -55,31 +57,36 @@ export class SearchHistoryComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.searchService.loadHistory().subscribe({
-      error: (err) => console.error('Error loading history:', err),
-    });
+    this.searchService
+      .loadHistory()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (err) => console.error('Error loading history:', err),
+      });
   }
 
   protected onClear(): void {
     this.queryControl.reset();
   }
 
-  protected onSelect(item: Search): void {
-    this.queryControl.setValue(item.query);
-    this.search(item.query);
-  }
-
   protected onSearch(): void {
     if (this.queryControl.invalid) {
       return;
     }
-    this.search(this.queryControl.value);
+    const searchQuery: SearchQuery = {query: this.queryControl.value};
+    this.handleSearch(this.searchService.saveSearch(searchQuery));
   }
 
-  private search(query: string): void {
-    this.searchService.saveSearch({query}).subscribe({
-      next: () => this.queryControl.reset(),
-      error: (err) => console.error('Error saving search:', err),
-    });
+  protected onSelect(item: Search): void {
+    this.handleSearch(this.searchService.updateSearch(item));
+  }
+
+  private handleSearch(searchObservable: Observable<Search[]>): void {
+    searchObservable
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.queryControl.reset(),
+        error: (err) => console.error('Error saving search:', err),
+      });
   }
 }

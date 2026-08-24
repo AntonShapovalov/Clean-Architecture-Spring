@@ -13,6 +13,7 @@ describe('SearchHistoryComponent', () => {
   let searchServiceMock: {
     loadHistory: Mock;
     saveSearch: Mock;
+    updateSearch: Mock;
     history: Signal<Search[]>;
   };
 
@@ -25,6 +26,7 @@ describe('SearchHistoryComponent', () => {
     searchServiceMock = {
       loadHistory: vi.fn().mockReturnValue(of(mockHistory)),
       saveSearch: vi.fn().mockReturnValue(of(mockHistory)),
+      updateSearch: vi.fn().mockReturnValue(of(mockHistory)),
       history: signal(mockHistory)
     };
 
@@ -84,6 +86,19 @@ describe('SearchHistoryComponent', () => {
 
     saveSubject.next(mockHistory);
     expect(component['queryControl'].value).toBe('');
+  });
+
+  it('should not reset search field if component is destroyed before save completes', () => {
+    const saveSubject = new Subject<Search[]>();
+    searchServiceMock.saveSearch.mockReturnValue(saveSubject.asObservable());
+
+    component['queryControl'].setValue('pending query');
+    component['onSearch']();
+
+    fixture.destroy();
+
+    saveSubject.next(mockHistory);
+    expect(component['queryControl'].value).toBe('pending query');
   });
 
   it('should handle error when loading history', () => {
@@ -173,35 +188,61 @@ describe('SearchHistoryComponent', () => {
     expect(compiled.querySelectorAll('.history-list li').length).toBe(2);
   });
 
-  it('should set search field text and call search with selected query on clicking history item', () => {
-    const saveSubject = new Subject<Search[]>();
-    searchServiceMock.saveSearch.mockReturnValue(saveSubject.asObservable());
+  it('should call search with selected search on clicking history item', () => {
+    const updateSubject = new Subject<Search[]>();
+    searchServiceMock.updateSearch.mockReturnValue(updateSubject.asObservable());
 
     const compiled = fixture.nativeElement as HTMLElement;
     const firstItem = compiled.querySelector('.history-list li') as HTMLElement;
     firstItem.click();
     fixture.detectChanges();
 
-    expect(component['queryControl'].value).toBe('test 1');
-    expect(searchServiceMock.saveSearch).toHaveBeenCalledWith({query: 'test 1'});
+    expect(searchServiceMock.updateSearch).toHaveBeenCalledWith(mockHistory[0]);
 
-    saveSubject.next(mockHistory);
+    updateSubject.next(mockHistory);
     expect(component['queryControl'].value).toBe('');
   });
 
-  it('should set search field text and call search with selected query on Enter keydown on history item', () => {
-    const saveSubject = new Subject<Search[]>();
-    searchServiceMock.saveSearch.mockReturnValue(saveSubject.asObservable());
+  it('should call search with selected search on Enter keydown on history item', () => {
+    const updateSubject = new Subject<Search[]>();
+    searchServiceMock.updateSearch.mockReturnValue(updateSubject.asObservable());
 
     const compiled = fixture.nativeElement as HTMLElement;
     const secondItem = compiled.querySelectorAll('.history-list li')[1] as HTMLElement;
     secondItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
     fixture.detectChanges();
 
-    expect(component['queryControl'].value).toBe('test 2');
-    expect(searchServiceMock.saveSearch).toHaveBeenCalledWith({query: 'test 2'});
+    expect(searchServiceMock.updateSearch).toHaveBeenCalledWith(mockHistory[1]);
 
-    saveSubject.next(mockHistory);
+    updateSubject.next(mockHistory);
     expect(component['queryControl'].value).toBe('');
+  });
+
+  it('should not reset search field if component is destroyed before updateSearch completes', () => {
+    const updateSubject = new Subject<Search[]>();
+    searchServiceMock.updateSearch.mockReturnValue(updateSubject.asObservable());
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const firstItem = compiled.querySelector('.history-list li') as HTMLElement;
+    firstItem.click();
+    fixture.detectChanges();
+
+    component['queryControl'].setValue('dirty query');
+    fixture.destroy();
+
+    updateSubject.next(mockHistory);
+    expect(component['queryControl'].value).toBe('dirty query');
+  });
+
+  it('should handle error when selecting search', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
+    searchServiceMock.updateSearch.mockReturnValue(throwError(() => new Error('Save error')));
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const firstItem = compiled.querySelector('.history-list li') as HTMLElement;
+    firstItem.click();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Error saving search:', expect.any(Error));
+    consoleSpy.mockRestore();
   });
 });
