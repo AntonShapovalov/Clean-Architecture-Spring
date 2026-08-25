@@ -242,7 +242,7 @@ describe('SearchHistoryComponent', () => {
     const firstItem = compiled.querySelector('.history-list li') as HTMLElement;
     firstItem.click();
 
-    expect(consoleSpy).toHaveBeenCalledWith('Error saving search:', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith('Error updating search:', expect.any(Error));
     consoleSpy.mockRestore();
   });
 });

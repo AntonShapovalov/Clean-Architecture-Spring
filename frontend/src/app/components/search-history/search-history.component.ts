@@ -7,9 +7,8 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
-import {Observable} from 'rxjs';
 import {SearchService} from '../../services/search.service';
-import {Search, SearchQuery} from '../../models/search.model';
+import {Search} from '../../models/search.model';
 
 class NeverErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(): boolean {
@@ -57,8 +56,7 @@ export class SearchHistoryComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.searchService
-      .loadHistory()
+    this.searchService.loadHistory()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         error: (err) => console.error('Error loading history:', err),
@@ -73,20 +71,19 @@ export class SearchHistoryComponent implements OnInit {
     if (this.queryControl.invalid) {
       return;
     }
-    const searchQuery: SearchQuery = {query: this.queryControl.value};
-    this.handleSearch(this.searchService.saveSearch(searchQuery));
-  }
-
-  protected onSelect(item: Search): void {
-    this.handleSearch(this.searchService.updateSearch(item));
-  }
-
-  private handleSearch(searchObservable: Observable<Search[]>): void {
-    searchObservable
+    this.searchService.saveSearch({query: this.queryControl.value})
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.queryControl.reset(),
         error: (err) => console.error('Error saving search:', err),
+      });
+  }
+
+  protected onSelect(item: Search): void {
+    this.searchService.updateSearch(item)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (err) => console.error('Error updating search:', err),
       });
   }
 }
