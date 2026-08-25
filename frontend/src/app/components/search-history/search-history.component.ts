@@ -9,6 +9,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {SearchService} from '../../services/search.service';
 import {Search} from '../../models/search.model';
+import {isDateToday} from '../../utils/date.utils';
 
 class NeverErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(): boolean {
@@ -35,6 +36,7 @@ export class SearchHistoryComponent implements OnInit {
   private readonly searchService = inject(SearchService);
   private readonly destroyRef = inject(DestroyRef);
 
+  protected readonly isDateToday = isDateToday;
   protected readonly neverErrorStateMatcher = new NeverErrorStateMatcher();
 
   protected readonly queryControl = new FormControl('', {

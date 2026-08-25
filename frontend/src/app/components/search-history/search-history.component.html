@@ -23,9 +23,11 @@
   <h3>Recent Searches</h3>
   <ul class="history-list">
     @for (item of filteredHistory(); track item.id) {
-      <li class="history-item" tabindex="0" (click)="onSelect(item)" (keydown.enter)="onSelect(item)">
+      <li (click)="onSelect(item)" (keydown.enter)="onSelect(item)" class="history-item" tabindex="0">
         <span class="query">{{ item.query }}</span>
-        <small class="date">{{ item.lastSeenAt | date: 'dd/MM/yy, h:mm:ss a' }}</small>
+        <small
+          class="date">{{ item.lastSeenAt | date: (isDateToday(item.lastSeenAt) ? 'mediumTime' : 'mediumDate') }}
+        </small>
       </li>
     } @empty {
       <li>No recent searches</li>
