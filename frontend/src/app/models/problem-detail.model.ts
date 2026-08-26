@@ -1,3 +1,8 @@
+export interface ValidationError {
+  field?: string;
+  message?: string;
+}
+
 export interface ProblemDetail {
   type?: string;
   title?: string;
@@ -5,4 +10,6 @@ export interface ProblemDetail {
   detail?: string;
   instance?: string;
   properties?: Record<string, unknown>;
+  errors?: (ValidationError | string)[];
+  [key: string]: unknown;
 }
