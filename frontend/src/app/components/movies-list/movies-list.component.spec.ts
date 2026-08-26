@@ -6,7 +6,7 @@ import {Search} from '../../models/search.model';
 import {Movie} from '../../models/movie.model';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {signal, WritableSignal} from '@angular/core';
-import {of, Subject} from 'rxjs';
+import {of, Subject, throwError} from 'rxjs';
 
 describe('MoviesListComponent', () => {
   let component: MoviesListComponent;
@@ -121,5 +121,56 @@ describe('MoviesListComponent', () => {
     expect(card.textContent).toContain('movie');
     expect(image.getAttribute('src')).toBe('poster.jpg');
     expect(image.getAttribute('alt')).toBe('Inception poster');
+  });
+
+  it('should render error message instead of movie list when moviesService fails', async () => {
+    mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
+
+    recentSearchSignal.set({
+      id: 99,
+      query: 'Unknown',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const errorElement = compiled.querySelector('.error-message');
+    expect(errorElement).not.toBeNull();
+    expect(errorElement?.textContent).toContain('Search with the given ID was not found');
+    expect(compiled.querySelector('.movies-grid')).toBeNull();
+    expect(compiled.textContent).not.toContain('No movies found');
+  });
+
+  it('should clear error message and display movies when search succeeds after failure', async () => {
+    mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
+
+    recentSearchSignal.set({
+      id: 99,
+      query: 'Unknown',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.error-message')).not.toBeNull();
+
+    mockMoviesService.getMovies.mockReturnValue(of(mockMovies));
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.error-message')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.movie-card')).not.toBeNull();
   });
 });

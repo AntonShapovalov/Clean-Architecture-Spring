@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {catchError, Observable, of, throwError} from 'rxjs';
 import {Movie} from '../models/movie.model';
+import {extractErrorMessage} from '../utils/api.utils';
 import {ApiService} from './api.service';
 
 @Injectable({
@@ -13,6 +14,11 @@ export class MoviesService {
     if (searchId == null || searchId <= 0) {
       return of<Movie[]>([]);
     }
-    return this.apiService.getMovies(searchId);
+    return this.apiService.getMovies(searchId).pipe(
+      catchError((error: unknown) => {
+        const message = extractErrorMessage(error);
+        return throwError(() => new Error(message));
+      })
+    );
   }
 }

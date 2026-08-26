@@ -12,3 +12,7 @@
   height: 280px;
   object-fit: contain;
 }
+
+.error-message {
+  color: var(--mat-sys-error, #ba1a1a);
+}

@@ -2,25 +2,29 @@
   <h2>{{ title() }}</h2>
 }
 
-<div class="movies-grid">
-  @for (movie of movies(); track movie.id) {
-    <mat-card appearance="outlined" class="movie-card">
-      <img
-        [alt]="movie.title + ' poster'"
-        [ngSrc]="movie.poster"
-        class="movie-poster"
-        height="450"
-        mat-card-image
-        width="300"
-      />
-      <mat-card-header>
-        <mat-card-title>{{ movie.title }}</mat-card-title>
-        <mat-card-subtitle>{{ movie.year }} · {{ movie.type }}</mat-card-subtitle>
-      </mat-card-header>
-    </mat-card>
-  } @empty {
-    @if (moviesResource.status() === 'resolved') {
-      <p>No movies found</p>
+@if (errorMessage()) {
+  <p class="error-message" role="alert">{{ errorMessage() }}</p>
+} @else {
+  <div class="movies-grid">
+    @for (movie of movies(); track movie.id) {
+      <mat-card appearance="outlined" class="movie-card">
+        <img
+          [alt]="movie.title + ' poster'"
+          [ngSrc]="movie.poster"
+          class="movie-poster"
+          height="450"
+          mat-card-image
+          width="300"
+        />
+        <mat-card-header>
+          <mat-card-title>{{ movie.title }}</mat-card-title>
+          <mat-card-subtitle>{{ movie.year }} · {{ movie.type }}</mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
+    } @empty {
+      @if (moviesResource.status() === 'resolved') {
+        <p>No movies found</p>
+      }
     }
-  }
-</div>
+  </div>
+}

@@ -66,6 +66,6 @@ describe('MoviesService', () => {
 
     service.getMovies(1).subscribe({error: errorHandler});
 
-    expect(errorHandler).toHaveBeenCalledWith(error);
+    expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({message: 'Load error'}));
   });
 });
