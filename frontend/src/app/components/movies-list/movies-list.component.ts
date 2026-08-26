@@ -5,7 +5,6 @@ import {MatCardModule} from '@angular/material/card';
 import {SearchService} from '../../services/search.service';
 import {MoviesService} from '../../services/movies.service';
 import {Movie} from '../../models/movie.model';
-import {extractErrorMessage} from '../../utils/api.utils';
 
 @Component({
   selector: 'app-movies-list',
@@ -30,9 +29,6 @@ export class MoviesListComponent {
   });
 
   protected readonly movies = this.moviesResource.value;
-
-  protected readonly errorMessage = computed(() => {
-    const error = this.moviesResource.error();
-    return error ? extractErrorMessage(error) : null;
-  });
+  protected readonly searchError = this.searchService.error;
+  protected readonly moviesError = this.moviesService.error;
 }

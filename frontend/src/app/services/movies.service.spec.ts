@@ -25,7 +25,13 @@ describe('MoviesService', () => {
     service = TestBed.inject(MoviesService);
   });
 
-  it('returns empty array observable when searchId is null or undefined', () => {
+  it('should have null initial error', () => {
+    expect(service.error()).toBeNull();
+  });
+
+  it('returns empty array observable and clears error when searchId is null or undefined', () => {
+    service.error.set('Previous error');
+
     let resultNull: Movie[] | undefined;
     service.getMovies(null).subscribe((data) => (resultNull = data));
 
@@ -35,9 +41,12 @@ describe('MoviesService', () => {
     expect(apiServiceMock.getMovies).not.toHaveBeenCalled();
     expect(resultNull).toEqual([]);
     expect(resultUndefined).toEqual([]);
+    expect(service.error()).toBeNull();
   });
 
-  it('returns empty array observable when searchId is non-positive', () => {
+  it('returns empty array observable and clears error when searchId is non-positive', () => {
+    service.error.set('Previous error');
+
     let resultZero: Movie[] | undefined;
     service.getMovies(0).subscribe((data) => (resultZero = data));
 
@@ -47,6 +56,7 @@ describe('MoviesService', () => {
     expect(apiServiceMock.getMovies).not.toHaveBeenCalled();
     expect(resultZero).toEqual([]);
     expect(resultNegative).toEqual([]);
+    expect(service.error()).toBeNull();
   });
 
   it('calls apiService.getMovies when searchId is provided', () => {
@@ -59,7 +69,7 @@ describe('MoviesService', () => {
     expect(result).toEqual(movies);
   });
 
-  it('propagates request errors from apiService', () => {
+  it('propagates request errors from apiService and updates error signal', () => {
     const error = new Error('Load error');
     const errorHandler = vi.fn();
     apiServiceMock.getMovies.mockReturnValue(throwError(() => error));
@@ -67,5 +77,15 @@ describe('MoviesService', () => {
     service.getMovies(1).subscribe({error: errorHandler});
 
     expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({message: 'Load error'}));
+    expect(service.error()).toBe('Load error');
+  });
+
+  it('clears error signal on successful getMovies', () => {
+    service.error.set('Previous error');
+    apiServiceMock.getMovies.mockReturnValue(of(movies));
+
+    service.getMovies(1).subscribe();
+
+    expect(service.error()).toBeNull();
   });
 });

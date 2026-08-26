@@ -13,11 +13,15 @@ describe('MoviesListComponent', () => {
   let fixture: ComponentFixture<MoviesListComponent>;
   let mockSearchService: {
     recentSearch: WritableSignal<Search | null>;
+    error: WritableSignal<string | null>;
   };
   let mockMoviesService: {
     getMovies: ReturnType<typeof vi.fn>;
+    error: WritableSignal<string | null>;
   };
   let recentSearchSignal: WritableSignal<Search | null>;
+  let searchErrorSignal: WritableSignal<string | null>;
+  let moviesErrorSignal: WritableSignal<string | null>;
 
   const mockMovies: Movie[] = [
     {id: 1, title: 'Inception', year: '2010', imdbId: 'tt1375666', type: 'movie', poster: 'poster.jpg'}
@@ -25,11 +29,15 @@ describe('MoviesListComponent', () => {
 
   beforeEach(async () => {
     recentSearchSignal = signal<Search | null>(null);
+    searchErrorSignal = signal<string | null>(null);
+    moviesErrorSignal = signal<string | null>(null);
     mockSearchService = {
-      recentSearch: recentSearchSignal
+      recentSearch: recentSearchSignal,
+      error: searchErrorSignal,
     };
     mockMoviesService = {
-      getMovies: vi.fn().mockReturnValue(of([]))
+      getMovies: vi.fn().mockReturnValue(of([])),
+      error: moviesErrorSignal,
     };
 
     await TestBed.configureTestingModule({
@@ -123,8 +131,9 @@ describe('MoviesListComponent', () => {
     expect(image.getAttribute('alt')).toBe('Inception poster');
   });
 
-  it('should render error message instead of movie list when moviesService fails', async () => {
+  it('should render error message and keep title when moviesService fails', async () => {
     mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
+    moviesErrorSignal.set('Search with the given ID was not found');
 
     recentSearchSignal.set({
       id: 99,
@@ -140,13 +149,36 @@ describe('MoviesListComponent', () => {
     const errorElement = compiled.querySelector('.error-message');
     expect(errorElement).not.toBeNull();
     expect(errorElement?.textContent).toContain('Search with the given ID was not found');
+    expect(compiled.querySelector('h2')).not.toBeNull();
+    expect(compiled.querySelector('h2')?.textContent).toContain('Search results for “Unknown”');
     expect(compiled.querySelector('.movies-grid')).toBeNull();
     expect(compiled.textContent).not.toContain('No movies found');
   });
 
-  it('should clear error message and display movies when search succeeds after failure', async () => {
-    mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
+  it('should render error message instead of title and movie list when searchService fails', async () => {
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    searchErrorSignal.set('Invalid search query');
+    await fixture.whenStable();
+    fixture.detectChanges();
 
+    const compiled = fixture.nativeElement as HTMLElement;
+    const errorElement = compiled.querySelector('.error-message');
+    expect(errorElement).not.toBeNull();
+    expect(errorElement?.textContent).toContain('Invalid search query');
+    expect(compiled.querySelector('h2')).toBeNull();
+    expect(compiled.querySelector('.movies-grid')).toBeNull();
+    expect(compiled.textContent).not.toContain('No movies found');
+  });
+
+  it('should clear error message and display movies when movie error is resolved on subsequent search', async () => {
+    mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
+    moviesErrorSignal.set('Search with the given ID was not found');
     recentSearchSignal.set({
       id: 99,
       query: 'Unknown',
@@ -158,7 +190,9 @@ describe('MoviesListComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.error-message')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('h2')).not.toBeNull();
 
+    moviesErrorSignal.set(null);
     mockMoviesService.getMovies.mockReturnValue(of(mockMovies));
     recentSearchSignal.set({
       id: 1,
@@ -171,6 +205,32 @@ describe('MoviesListComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.error-message')).toBeNull();
+    expect(fixture.nativeElement.querySelector('h2')?.textContent).toContain('Search results for “Inception”');
+    expect(fixture.nativeElement.querySelector('.movie-card')).not.toBeNull();
+  });
+
+  it('should clear error message and display title and movies when search succeeds after failure', async () => {
+    searchErrorSignal.set('Invalid search query');
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.error-message')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('h2')).toBeNull();
+
+    searchErrorSignal.set(null);
+    mockMoviesService.getMovies.mockReturnValue(of(mockMovies));
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.error-message')).toBeNull();
+    expect(fixture.nativeElement.querySelector('h2')?.textContent).toContain('Search results for “Inception”');
     expect(fixture.nativeElement.querySelector('.movie-card')).not.toBeNull();
   });
 });

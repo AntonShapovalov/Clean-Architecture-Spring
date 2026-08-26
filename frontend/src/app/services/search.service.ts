@@ -1,7 +1,8 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {ApiService} from './api.service';
 import {Search, SearchQuery} from '../models/search.model';
-import {map, Observable, switchMap, tap} from 'rxjs';
+import {catchError, map, Observable, switchMap, tap, throwError} from 'rxjs';
+import {extractErrorMessage} from '../utils/api.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ export class SearchService {
 
   readonly history = signal<Search[]>([]);
   readonly recentSearch = signal<Search | null>(null);
+  readonly error = signal<string | null>(null);
 
   loadHistory(): Observable<Search[]> {
     return this.apiService.getSearchHistory().pipe(
@@ -23,13 +25,27 @@ export class SearchService {
 
   saveSearch(query: SearchQuery): Observable<Search[]> {
     return this.apiService.saveSearch(query).pipe(
+      catchError((error: unknown) => {
+        const message = extractErrorMessage(error);
+        this.error.set(message);
+        return throwError(() => new Error(message));
+      }),
+      tap(() => this.error.set(null)),
       switchMap(() => this.loadHistory())
     );
   }
 
   updateSearch(search: Search): Observable<Search[]> {
     return this.apiService.saveSearch({query: search.query}).pipe(
-      tap(() => this.updateSearchHistory(search)),
+      catchError((error: unknown) => {
+        const message = extractErrorMessage(error);
+        this.error.set(message);
+        return throwError(() => new Error(message));
+      }),
+      tap(() => {
+        this.error.set(null);
+        this.updateSearchHistory(search);
+      }),
       map(() => this.history())
     );
   }

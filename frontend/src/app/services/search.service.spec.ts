@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SearchService } from './search.service';
 import { ApiService } from './api.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { Search, SearchQuery } from '../models/search.model';
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 
@@ -42,6 +42,10 @@ describe('SearchService', () => {
 
   it('should have null initial recentSearch', () => {
     expect(service.recentSearch()).toBeNull();
+  });
+
+  it('should have null initial error', () => {
+    expect(service.error()).toBeNull();
   });
 
   describe('loadHistory', () => {
@@ -92,6 +96,27 @@ describe('SearchService', () => {
       service.saveSearch(query).subscribe(h => result = h);
       expect(result).toEqual(newHistory);
     });
+
+    it('should propagate request errors from apiService and update error signal', () => {
+      const error = new Error('Save error');
+      const errorHandler = vi.fn();
+      apiServiceMock.saveSearch.mockReturnValue(throwError(() => error));
+
+      service.saveSearch({ query: 'failed query' }).subscribe({ error: errorHandler });
+
+      expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({ message: 'Save error' }));
+      expect(service.error()).toBe('Save error');
+    });
+
+    it('should clear error signal on successful saveSearch', () => {
+      service.error.set('Previous error');
+      apiServiceMock.saveSearch.mockReturnValue(of(undefined));
+      apiServiceMock.getSearchHistory.mockReturnValue(of(mockHistory));
+
+      service.saveSearch({ query: 'new query' }).subscribe();
+
+      expect(service.error()).toBeNull();
+    });
   });
 
   describe('updateSearch', () => {
@@ -135,6 +160,17 @@ describe('SearchService', () => {
       expect(result.length).toBe(2);
       expect(result[1].id).toBe(selectedSearch.id);
       expect(result[1].lastSeenAt).not.toBe(selectedSearch.lastSeenAt);
+    });
+
+    it('should propagate request errors from apiService and update error signal on updateSearch', () => {
+      const error = new Error('Update error');
+      const errorHandler = vi.fn();
+      apiServiceMock.saveSearch.mockReturnValue(throwError(() => error));
+
+      service.updateSearch(mockHistory[0]).subscribe({ error: errorHandler });
+
+      expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({ message: 'Update error' }));
+      expect(service.error()).toBe('Update error');
     });
   });
 });
