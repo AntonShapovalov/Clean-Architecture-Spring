@@ -131,6 +131,25 @@ describe('MoviesListComponent', () => {
     expect(image.getAttribute('alt')).toBe('Inception poster');
   });
 
+  it('should render an image placeholder when the poster URL is invalid', () => {
+    const movieWithoutPoster: Movie = {...mockMovies[0], poster: 'N/A'};
+    mockMoviesService.getMovies.mockReturnValue(of([movieWithoutPoster]));
+
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false
+    });
+    fixture.detectChanges();
+
+    const card = fixture.nativeElement.querySelector('.movie-card') as HTMLElement;
+    expect(card.querySelector('img')).toBeNull();
+    expect(card.querySelector('.movie-poster-placeholder')).not.toBeNull();
+    expect(card.querySelector('mat-icon')?.textContent?.trim()).toBe('image_not_supported');
+  });
+
   it('should render error message and keep title when moviesService fails', async () => {
     mockMoviesService.getMovies.mockReturnValue(throwError(() => new Error('Search with the given ID was not found')));
     moviesErrorSignal.set('Search with the given ID was not found');

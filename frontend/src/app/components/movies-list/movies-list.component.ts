@@ -2,13 +2,15 @@ import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/cor
 import {rxResource} from '@angular/core/rxjs-interop';
 import {NgOptimizedImage} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
 import {SearchService} from '../../services/search.service';
 import {MoviesService} from '../../services/movies.service';
 import {Movie} from '../../models/movie.model';
+import {isValidUrl} from '../../utils/url.utils';
 
 @Component({
   selector: 'app-movies-list',
-  imports: [MatCardModule, NgOptimizedImage],
+  imports: [MatCardModule, MatIconModule, NgOptimizedImage],
   templateUrl: './movies-list.component.html',
   styleUrl: './movies-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,4 +33,5 @@ export class MoviesListComponent {
   protected readonly movies = this.moviesResource.value;
   protected readonly searchError = this.searchService.error;
   protected readonly moviesError = this.moviesService.error;
+  protected readonly isValidUrl = isValidUrl;
 }
