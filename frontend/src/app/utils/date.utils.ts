@@ -1,3 +1,11 @@
+/**
+ * Determines whether a given date string or `Date` instance matches the current calendar day (today).
+ *
+ * Comparisons are performed using the local time zone's year, month, and day.
+ *
+ * @param value The date to evaluate, provided as a date string (e.g. ISO format) or a `Date` object.
+ * @returns `true` if the value represents a valid date that falls on today's local date; otherwise `false`.
+ */
 export function isDateToday(value: string | Date): boolean {
   const date = new Date(value);
 

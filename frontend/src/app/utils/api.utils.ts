@@ -1,5 +1,16 @@
 import {HttpErrorResponse} from '@angular/common/http';
 
+/**
+ * Extracts a human-readable error message from an unknown error value.
+ *
+ * Supports Angular `HttpErrorResponse` objects with RFC 7807 / RFC 9457 `ProblemDetail`
+ * bodies (validation error lists, detail, title), standard JavaScript `Error` instances,
+ * plain string messages, and returns a default fallback message when no specific error
+ * information is available.
+ *
+ * @param error The error value, object, or exception to extract a message from.
+ * @returns A descriptive error message string.
+ */
 export function extractErrorMessage(error: unknown): string {
   const httpMessage = getHttpErrorMessage(error);
   if (httpMessage !== null) {

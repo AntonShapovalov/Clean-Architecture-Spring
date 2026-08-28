@@ -1,0 +1,9 @@
+.error-message {
+  color: var(--mat-sys-error, #ba1a1a);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}

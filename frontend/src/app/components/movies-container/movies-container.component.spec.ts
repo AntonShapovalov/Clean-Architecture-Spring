@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MoviesListComponent} from './movies-list.component';
+import {MoviesContainerComponent} from './movies-container.component';
 import {SearchService} from '../../services/search.service';
 import {MoviesService} from '../../services/movies.service';
 import {Search} from '../../models/search.model';
 import {Movie} from '../../models/movie.model';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {signal, WritableSignal} from '@angular/core';
-import {of, Subject, throwError} from 'rxjs';
+import {delay, of, Subject, throwError} from 'rxjs';
 
-describe('MoviesListComponent', () => {
-  let component: MoviesListComponent;
-  let fixture: ComponentFixture<MoviesListComponent>;
+describe('MoviesContainerComponent', () => {
+  let component: MoviesContainerComponent;
+  let fixture: ComponentFixture<MoviesContainerComponent>;
   let mockSearchService: {
     recentSearch: WritableSignal<Search | null>;
     error: WritableSignal<string | null>;
@@ -41,14 +41,14 @@ describe('MoviesListComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [MoviesListComponent],
+      imports: [MoviesContainerComponent],
       providers: [
         {provide: SearchService, useValue: mockSearchService},
         {provide: MoviesService, useValue: mockMoviesService}
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MoviesListComponent);
+    fixture = TestBed.createComponent(MoviesContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -251,5 +251,48 @@ describe('MoviesListComponent', () => {
     expect(fixture.nativeElement.querySelector('.error-message')).toBeNull();
     expect(fixture.nativeElement.querySelector('h2')?.textContent).toContain('Search results for “Inception”');
     expect(fixture.nativeElement.querySelector('.movie-card')).not.toBeNull();
+  });
+
+  it('should show loading indicator after 500 millis of loading', () => {
+    vi.useFakeTimers();
+    const moviesSubject = new Subject<Movie[]>();
+    mockMoviesService.getMovies.mockReturnValue(moviesSubject);
+
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false,
+    });
+    fixture.detectChanges();
+
+    vi.advanceTimersByTime(500);
+    fixture.detectChanges();
+
+    const spinner = fixture.nativeElement.querySelector('mat-spinner');
+    expect(spinner).not.toBeNull();
+    vi.useRealTimers();
+  });
+
+  it('should not show loading indicator if loading finishes before 500 millis', async () => {
+    vi.useFakeTimers();
+    mockMoviesService.getMovies.mockReturnValue(of(mockMovies).pipe(delay(500)));
+
+    recentSearchSignal.set({
+      id: 1,
+      query: 'Inception',
+      updatedDate: '2023-01-01',
+      lastSeenAt: '2023-01-01T00:00:00Z',
+      isExpired: false,
+    });
+    fixture.detectChanges();
+
+    vi.advanceTimersByTime(300);
+    fixture.detectChanges();
+
+    const spinner = fixture.nativeElement.querySelector('mat-spinner');
+    expect(spinner).toBeNull();
+    vi.useRealTimers();
   });
 });

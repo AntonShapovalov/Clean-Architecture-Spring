@@ -1,0 +1,19 @@
+@if (searchError()) {
+  <p class="error-message" role="alert">{{ searchError() }}</p>
+} @else {
+  @if (title()) {
+    <h2>{{ title() }}</h2>
+  }
+
+  @if (moviesError()) {
+    <p class="error-message" role="alert">{{ moviesError() }}</p>
+  } @else {
+    @if (showLoading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="48" aria-label="Loading movies"></mat-spinner>
+      </div>
+    }
+
+    <app-movies-grid [movies]="movies()" [loading]="moviesResource.isLoading()" />
+  }
+}
