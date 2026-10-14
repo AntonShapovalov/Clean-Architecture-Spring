@@ -88,12 +88,8 @@ Overall, the application architecture provides a solid foundation for building c
 
 The practical benefit is that every layer can be changed on its own. The database and the OMDB API are hidden behind repositories, so replacing H2 with a persistent database, or OMDB with another movie provider, does not touch a single business rule. The rules themselves live in use cases that know nothing about HTTP, Spring, or SQL, and can be verified in milliseconds without starting the application context.
 
-#### Test Coverage
-The layered structure enables testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers can be additionally covered with integration and end-to-end tests. 
-In this way, the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage) of the application can reach 100% while keeping tests fast, simple, and reliable.
-
 #### Clean Architecture Layers
-Unlike Android, which does not define application layers by default, Spring provides predefined stereotypes that can be used to organize the three main layers: data, domain, and presentation.
+In contrast to Android, Spring provides predefined stereotypes that can be used to organize the three main layers: data, domain, and presentation.
 
 * The data layer is typically implemented using `@Repository` classes
 * The domain layer is typically implemented using `@Service` classes
@@ -106,3 +102,7 @@ In this project the application layers are placed in three top-level packages un
 * `app` - the UI, presentation, and framework layer: REST controllers, which only validate the incoming request and return the result, a thin service bridge between controllers and use cases that also switches coroutine dispatchers, as well as Spring configuration, exception handling, and request models
 * `domain` - the domain layer with the business logic: use cases with all business rules, and domain models, no framework dependencies
 * `data` - the data layer with repositories and data sources: repositories as a facade over the local database and the remote API, local and remote data sources, and mappers that convert entities and API responses to domain models
+
+#### Test Coverage
+The layered structure enables testing of each layer independently. The domain layer can be completely covered with fast and isolated unit tests. Data and presentation layers can be additionally covered with integration and end-to-end tests. 
+In this way, the [test coverage](https://github.com/AntonShapovalov/Clean-Architecture-Spring/wiki/Test-coverage) of the application can reach 100% while keeping tests fast, simple, and reliable.
