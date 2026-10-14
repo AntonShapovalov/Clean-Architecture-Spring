@@ -101,9 +101,8 @@ Unlike Android, which does not define application layers by default, Spring prov
 
 However, placing all business logic in service classes can make them complex and difficult to test. Instead, business logic and data transformations should be encapsulated in dedicated use case classes. This approach keeps services lightweight and makes the business logic easier to cover with fast unit tests.
 
-In this project the layers are organized as follows:
+In this project the application layers are placed in three top-level packages under `backend/src/main/kotlin/clean/architecture/omdb`, and each package corresponds to one main responsibility:
 
-* `controller` - REST controllers, they only validate the incoming request and return the result
-* `service` - a thin bridge between controllers and use cases, it also switches coroutine dispatchers
-* `domain` - use cases with all business rules, and domain models, no framework dependencies
-* `data` - repositories as a facade over the local database and the remote API, with mappers that convert entities and API responses to domain models
+* `app` - the UI, presentation, and framework layer: REST controllers, which only validate the incoming request and return the result, a thin service bridge between controllers and use cases that also switches coroutine dispatchers, as well as Spring configuration, exception handling, and request models
+* `domain` - the domain layer with the business logic: use cases with all business rules, and domain models, no framework dependencies
+* `data` - the data layer with repositories and data sources: repositories as a facade over the local database and the remote API, local and remote data sources, and mappers that convert entities and API responses to domain models

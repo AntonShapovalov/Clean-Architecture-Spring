@@ -1,6 +1,6 @@
 package clean.architecture.omdb.data.remote
 
-import clean.architecture.omdb.config.OmdbApiProperties
+import clean.architecture.omdb.app.config.OmdbApiProperties
 import clean.architecture.omdb.data.remote.model.testMovieResponse
 import clean.architecture.omdb.data.remote.model.testSearchResponse
 import com.fasterxml.jackson.databind.ObjectMapper

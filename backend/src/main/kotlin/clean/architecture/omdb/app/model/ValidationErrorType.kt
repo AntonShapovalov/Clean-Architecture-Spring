@@ -1,6 +1,6 @@
-package clean.architecture.omdb.model
+package clean.architecture.omdb.app.model
 
-import clean.architecture.omdb.controller.ProblemTypesController
+import clean.architecture.omdb.app.controller.ProblemTypesController
 
 /**
  * Validation error model for [ProblemTypesController].

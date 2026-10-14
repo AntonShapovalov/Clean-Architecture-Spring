@@ -1,13 +1,13 @@
-package clean.architecture.omdb.controller
+package clean.architecture.omdb.app.controller
 
+import clean.architecture.omdb.app.exception.ErrorMessage
+import clean.architecture.omdb.app.exception.GlobalExceptionHandler
+import clean.architecture.omdb.app.model.SearchQuery
+import clean.architecture.omdb.app.service.SearchService
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.model.testMovie
 import clean.architecture.omdb.domain.model.testSearch
-import clean.architecture.omdb.exception.ErrorMessage
-import clean.architecture.omdb.exception.GlobalExceptionHandler
-import clean.architecture.omdb.model.SearchQuery
-import clean.architecture.omdb.service.SearchService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
 import org.junit.jupiter.api.Test

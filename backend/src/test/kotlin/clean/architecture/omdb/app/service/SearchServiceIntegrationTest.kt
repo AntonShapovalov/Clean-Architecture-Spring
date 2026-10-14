@@ -1,6 +1,6 @@
-package clean.architecture.omdb.service
+package clean.architecture.omdb.app.service
 
-import clean.architecture.omdb.coroutines.DispatcherProvider
+import clean.architecture.omdb.app.coroutines.DispatcherProvider
 import clean.architecture.omdb.data.local.MovieCrudRepository
 import clean.architecture.omdb.data.local.SearchHistoryCrudRepository
 import clean.architecture.omdb.data.local.SearchMoviesCrudRepository

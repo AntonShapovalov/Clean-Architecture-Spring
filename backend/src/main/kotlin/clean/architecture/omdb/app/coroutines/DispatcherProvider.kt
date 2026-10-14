@@ -1,4 +1,4 @@
-package clean.architecture.omdb.coroutines
+package clean.architecture.omdb.app.coroutines
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

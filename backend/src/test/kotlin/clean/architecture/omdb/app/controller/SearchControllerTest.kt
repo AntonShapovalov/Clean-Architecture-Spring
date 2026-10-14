@@ -1,9 +1,9 @@
-package clean.architecture.omdb.controller
+package clean.architecture.omdb.app.controller
 
+import clean.architecture.omdb.app.model.SearchQuery
+import clean.architecture.omdb.app.service.SearchService
 import clean.architecture.omdb.domain.model.testMovie
 import clean.architecture.omdb.domain.model.testSearch
-import clean.architecture.omdb.model.SearchQuery
-import clean.architecture.omdb.service.SearchService
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

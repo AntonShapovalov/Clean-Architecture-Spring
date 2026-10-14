@@ -68,7 +68,7 @@ docker compose up --build        # frontend on :80 (nginx), backend on :8080
 Layering is deliberate and the whole point of the repository; keep changes inside the right layer.
 
 ```
-controller/  @RestController — HTTP only: validate input, serialize domain models, Swagger annotations
+app/controller/  @RestController — HTTP only: validate input, serialize domain models, Swagger annotations
 service/     @Service        — thin bridge controller -> use cases; owns dispatcher switching
 domain/      usecase/ model/ — all business logic and rules; framework-independent, no Spring web/data types
 data/        @Component/@Service — data facades; the only place that knows about DB and remote shapes
@@ -100,7 +100,7 @@ Persistence is in-memory H2 over R2DBC; the schema is created from `backend/src/
 (`movies`, `search_history`, `search_movies` join table). Data does not survive a restart.
 
 Errors are always `application/problem+json`. `GlobalExceptionHandler` injects `timestamp` and
-`requestId` into every `ProblemDetail`; problem `type` URIs are documented by `ProblemTypesController`.
+`requestId` into every `ProblemDetail`; problem `type` URIs are documented by `app/controller/ProblemTypesController`.
 
 ### Backend conventions
 

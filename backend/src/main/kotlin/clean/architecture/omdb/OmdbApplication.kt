@@ -1,6 +1,6 @@
 package clean.architecture.omdb
 
-import clean.architecture.omdb.config.OmdbApiProperties
+import clean.architecture.omdb.app.config.OmdbApiProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

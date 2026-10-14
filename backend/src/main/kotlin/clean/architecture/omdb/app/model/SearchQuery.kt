@@ -1,6 +1,6 @@
-package clean.architecture.omdb.model
+package clean.architecture.omdb.app.model
 
-import clean.architecture.omdb.controller.SearchController
+import clean.architecture.omdb.app.controller.SearchController
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.GroupSequence

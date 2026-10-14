@@ -1,4 +1,4 @@
-package clean.architecture.omdb.model
+package clean.architecture.omdb.app.model
 
 import jakarta.validation.Validation
 import jakarta.validation.Validator

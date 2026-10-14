@@ -1,4 +1,4 @@
-package clean.architecture.omdb.exception
+package clean.architecture.omdb.app.exception
 
 import org.springframework.http.ProblemDetail
 

@@ -1,9 +1,9 @@
-package clean.architecture.omdb.controller
+package clean.architecture.omdb.app.controller
 
+import clean.architecture.omdb.app.model.SearchQuery
+import clean.architecture.omdb.app.service.SearchService
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
-import clean.architecture.omdb.model.SearchQuery
-import clean.architecture.omdb.service.SearchService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content

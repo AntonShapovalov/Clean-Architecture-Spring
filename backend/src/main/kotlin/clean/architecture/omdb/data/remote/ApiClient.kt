@@ -1,6 +1,6 @@
 package clean.architecture.omdb.data.remote
 
-import clean.architecture.omdb.config.OmdbApiProperties
+import clean.architecture.omdb.app.config.OmdbApiProperties
 import clean.architecture.omdb.data.remote.model.SearchResponse
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.stereotype.Component

@@ -1,5 +1,4 @@
-package clean.architecture.omdb.coroutines
-
+package clean.architecture.omdb.app.coroutines
 import kotlinx.coroutines.Dispatchers
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

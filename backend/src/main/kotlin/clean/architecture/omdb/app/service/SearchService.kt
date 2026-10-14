@@ -1,6 +1,6 @@
-package clean.architecture.omdb.service
+package clean.architecture.omdb.app.service
 
-import clean.architecture.omdb.coroutines.DispatcherProvider
+import clean.architecture.omdb.app.coroutines.DispatcherProvider
 import clean.architecture.omdb.domain.model.Movie
 import clean.architecture.omdb.domain.model.Search
 import clean.architecture.omdb.domain.usecase.GetMoviesUseCase

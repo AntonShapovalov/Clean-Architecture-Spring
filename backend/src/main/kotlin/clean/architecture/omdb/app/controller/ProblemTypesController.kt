@@ -1,6 +1,6 @@
-package clean.architecture.omdb.controller
+package clean.architecture.omdb.app.controller
 
-import clean.architecture.omdb.model.ValidationErrorType
+import clean.architecture.omdb.app.model.ValidationErrorType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema

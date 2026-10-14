@@ -1,4 +1,4 @@
-package clean.architecture.omdb.exception
+package clean.architecture.omdb.app.exception
 
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order

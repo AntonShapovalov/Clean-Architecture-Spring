@@ -1,4 +1,4 @@
-package clean.architecture.omdb.config
+package clean.architecture.omdb.app.config
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
