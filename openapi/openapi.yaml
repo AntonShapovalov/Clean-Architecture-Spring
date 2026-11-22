@@ -97,8 +97,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -107,8 +107,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -141,8 +141,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -151,8 +151,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "application/problem+json": {
                 "schema": {
