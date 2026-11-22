@@ -48,6 +48,26 @@ describe('SearchService', () => {
     expect(service.error()).toBeNull();
   });
 
+  describe('getFilteredHistory', () => {
+    beforeEach(() => service.history.set(mockHistory));
+
+    it('should match query substrings case-insensitively and ignore surrounding whitespace', () => {
+      expect(service.getFilteredHistory('  QUERY 1  ')).toEqual([mockHistory[0]]);
+    });
+
+    it('should return all history for an empty or whitespace-only filter', () => {
+      expect(service.getFilteredHistory('')).toEqual(mockHistory);
+      expect(service.getFilteredHistory('   ')).toEqual(mockHistory);
+    });
+
+    it('should use the latest history signal value', () => {
+      const updatedHistory = [mockHistory[1]];
+      service.history.set(updatedHistory);
+
+      expect(service.getFilteredHistory('query')).toEqual(updatedHistory);
+    });
+  });
+
   describe('loadHistory', () => {
     it('should update history signal on success', () => {
       service.loadHistory().subscribe();
@@ -60,10 +80,38 @@ describe('SearchService', () => {
       expect(service.recentSearch()).toEqual(mockHistory[0]);
     });
 
-    it('should return history observable', () => {
-      let result: Search[] = [];
-      service.loadHistory().subscribe(h => result = h);
-      expect(result).toEqual(mockHistory);
+    it('should return a success flag', () => {
+      let result = false;
+      service.loadHistory().subscribe(loaded => result = loaded);
+      expect(result).toBe(true);
+    });
+
+    it('should set empty history and clear recentSearch when no history is returned', () => {
+      apiServiceMock.getSearchHistory.mockReturnValue(of([]));
+
+      let result = false;
+      service.loadHistory().subscribe(loaded => result = loaded);
+
+      expect(result).toBe(true);
+      expect(service.history()).toEqual([]);
+      expect(service.recentSearch()).toBeNull();
+    });
+
+    it('should log load errors, preserve the error, and leave existing state unchanged', () => {
+      const error = new Error('Load error');
+      const errorHandler = vi.fn();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
+      service.history.set(mockHistory);
+      service.recentSearch.set(mockHistory[0]);
+      apiServiceMock.getSearchHistory.mockReturnValue(throwError(() => error));
+
+      service.loadHistory().subscribe({ error: errorHandler });
+
+      expect(errorHandler).toHaveBeenCalledWith(error);
+      expect(consoleSpy).toHaveBeenCalledWith('Error loading history:', error);
+      expect(service.history()).toEqual(mockHistory);
+      expect(service.recentSearch()).toEqual(mockHistory[0]);
+      consoleSpy.mockRestore();
     });
   });
 
@@ -84,7 +132,7 @@ describe('SearchService', () => {
       expect(service.recentSearch()).toEqual(newHistory[0]);
     });
 
-    it('should return new history observable', () => {
+    it('should return a success flag after reloading history', () => {
       const query: SearchQuery = { query: 'new query' };
       const newHistory: Search[] = [
         { id: 3, query: 'new query', updatedDate: '2023-01-03', lastSeenAt: '2023-01-03T00:00:00Z', isExpired: false },
@@ -92,20 +140,23 @@ describe('SearchService', () => {
       ];
       apiServiceMock.getSearchHistory.mockReturnValue(of(newHistory));
 
-      let result: Search[] = [];
-      service.saveSearch(query).subscribe(h => result = h);
-      expect(result).toEqual(newHistory);
+      let result = false;
+      service.saveSearch(query).subscribe(loaded => result = loaded);
+      expect(result).toBe(true);
     });
 
     it('should propagate request errors from apiService and update error signal', () => {
       const error = new Error('Save error');
       const errorHandler = vi.fn();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
       apiServiceMock.saveSearch.mockReturnValue(throwError(() => error));
 
       service.saveSearch({ query: 'failed query' }).subscribe({ error: errorHandler });
 
       expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({ message: 'Save error' }));
       expect(service.error()).toBe('Save error');
+      expect(consoleSpy).toHaveBeenCalledWith('Error saving search:', error);
+      consoleSpy.mockRestore();
     });
 
     it('should clear error signal on successful saveSearch', () => {
@@ -116,6 +167,24 @@ describe('SearchService', () => {
       service.saveSearch({ query: 'new query' }).subscribe();
 
       expect(service.error()).toBeNull();
+    });
+
+    it('should propagate and log a history reload error after saving without replacing current history', () => {
+      const query: SearchQuery = {query: 'new query'};
+      const error = new Error('Reload error');
+      const errorHandler = vi.fn();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
+      service.loadHistory().subscribe();
+      apiServiceMock.saveSearch.mockReturnValue(of(undefined));
+      apiServiceMock.getSearchHistory.mockReturnValue(throwError(() => error));
+
+      service.saveSearch(query).subscribe({error: errorHandler});
+
+      expect(errorHandler).toHaveBeenCalledWith(error);
+      expect(consoleSpy).toHaveBeenCalledWith('Error loading history:', error);
+      expect(service.history()).toEqual(mockHistory);
+      expect(service.recentSearch()).toEqual(mockHistory[0]);
+      consoleSpy.mockRestore();
     });
   });
 
@@ -150,27 +219,28 @@ describe('SearchService', () => {
       vi.useRealTimers();
     });
 
-    it('should return updated history observable', () => {
+    it('should return a success flag', () => {
       service.loadHistory().subscribe();
 
       const selectedSearch = mockHistory[1];
-      let result: Search[] = [];
-      service.updateSearch(selectedSearch).subscribe(h => result = h);
+      let result = false;
+      service.updateSearch(selectedSearch).subscribe(updated => result = updated);
 
-      expect(result.length).toBe(2);
-      expect(result[1].id).toBe(selectedSearch.id);
-      expect(result[1].lastSeenAt).not.toBe(selectedSearch.lastSeenAt);
+      expect(result).toBe(true);
     });
 
     it('should propagate request errors from apiService and update error signal on updateSearch', () => {
       const error = new Error('Update error');
       const errorHandler = vi.fn();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn());
       apiServiceMock.saveSearch.mockReturnValue(throwError(() => error));
 
       service.updateSearch(mockHistory[0]).subscribe({ error: errorHandler });
 
       expect(errorHandler).toHaveBeenCalledWith(expect.objectContaining({ message: 'Update error' }));
       expect(service.error()).toBe('Update error');
+      expect(consoleSpy).toHaveBeenCalledWith('Error updating search:', error);
+      consoleSpy.mockRestore();
     });
   });
 });

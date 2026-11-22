@@ -26,16 +26,32 @@ export class SearchService {
   readonly error = signal<string | null>(null);
 
   /**
+   * Returns history entries matching a case-insensitive query substring.
+   *
+   * @param filter The query text used to filter history.
+   */
+  getFilteredHistory(filter: string): Search[] {
+    const normalizedFilter = filter.trim().toLowerCase();
+    const history = this.history();
+    if (!normalizedFilter) {
+      return history;
+    }
+    return history.filter((item) => item.query.toLowerCase().includes(normalizedFilter));
+  }
+
+  /**
    * Loads search history from the backend, updates {@link history}, and sets the most recent search.
    *
-   * @returns An `Observable` emitting the loaded search history array.
+   * @returns An `Observable` emitting `true` when the history loads successfully.
    */
-  loadHistory(): Observable<Search[]> {
+  loadHistory(): Observable<boolean> {
     return this.apiService.getSearchHistory().pipe(
       tap((history) => {
         this.history.set(history);
         this.recentSearch.set(history[0] ?? null);
-      })
+      }),
+      map(() => true),
+      tap({error: (error: unknown) => console.error('Error loading history:', error)})
     );
   }
 
@@ -43,13 +59,14 @@ export class SearchService {
    * Saves a new search query to the backend, clears any prior error, and reloads history.
    *
    * @param query The search query to save.
-   * @returns An `Observable` emitting the updated search history.
+   * @returns An `Observable` emitting `true` when the search is saved and history reloads.
    */
-  saveSearch(query: SearchQuery): Observable<Search[]> {
+  saveSearch(query: SearchQuery): Observable<boolean> {
     return this.apiService.saveSearch(query).pipe(
       catchError((error: unknown) => {
         const message = extractErrorMessage(error);
         this.error.set(message);
+        console.error('Error saving search:', error);
         return throwError(() => new Error(message));
       }),
       tap(() => this.error.set(null)),
@@ -62,20 +79,21 @@ export class SearchService {
    * and sets it as the active recent search.
    *
    * @param search The search record to update.
-   * @returns An `Observable` emitting the updated search history list.
+   * @returns An `Observable` emitting `true` when the selected search is updated.
    */
-  updateSearch(search: Search): Observable<Search[]> {
+  updateSearch(search: Search): Observable<boolean> {
     return this.apiService.saveSearch({query: search.query}).pipe(
       catchError((error: unknown) => {
         const message = extractErrorMessage(error);
         this.error.set(message);
+        console.error('Error updating search:', error);
         return throwError(() => new Error(message));
       }),
       tap(() => {
         this.error.set(null);
         this.updateSearchHistory(search);
       }),
-      map(() => this.history())
+      map(() => true)
     );
   }
 

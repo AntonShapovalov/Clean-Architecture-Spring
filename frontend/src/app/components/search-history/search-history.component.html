@@ -17,20 +17,23 @@
         </button>
       }
     </mat-form-field>
-    <button [disabled]="queryControl.invalid" matButton="filled" type="submit">Search</button>
+    <button [disabled]="queryControl.invalid || isActionPending()" matButton="filled" type="submit">Search</button>
   </form>
 
-  <h3>Recent Searches</h3>
-  <ul class="history-list">
-    @for (item of filteredHistory(); track item.id) {
-      <li (click)="onSelect(item)" (keydown.enter)="onSelect(item)" class="history-item" tabindex="0">
-        <span class="query">{{ item.query }}</span>
-        <small
-          class="date">{{ item.lastSeenAt | date: (isDateToday(item.lastSeenAt) ? 'mediumTime' : 'mediumDate') }}
-        </small>
-      </li>
-    } @empty {
-      <li>No recent searches</li>
-    }
-  </ul>
+  <h3 id="history-heading">Recent Searches</h3>
+  @if (filteredHistory().length > 0) {
+    <mat-action-list aria-labelledby="history-heading" class="history-list">
+      @for (item of filteredHistory(); track item.id) {
+        <button (click)="onSelect(item)"
+                [attr.aria-disabled]="isActionPending()"
+                mat-list-item
+                type="button">
+          <span matListItemTitle>{{ item.query }}</span>
+          <small matListItemMeta>{{ item.lastSeenAt | date: (isDateToday(item.lastSeenAt) ? 'mediumTime' : 'mediumDate') }}</small>
+        </button>
+      }
+    </mat-action-list>
+  } @else {
+    <p>No recent searches</p>
+  }
 </div>

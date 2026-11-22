@@ -20,25 +20,3 @@ h3 {
   margin-top: 2rem;
   margin-bottom: 0.5rem;
 }
-
-.history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
-
-    &.history-item {
-      cursor: pointer;
-
-      &:hover {
-        background-color: var(--mat-sys-surface-container-highest, rgba(0, 0, 0, 0.04));
-      }
-    }
-  }
-}

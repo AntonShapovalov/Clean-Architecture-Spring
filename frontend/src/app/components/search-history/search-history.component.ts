@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
+import {rxResource, toSignal} from '@angular/core/rxjs-interop';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DatePipe} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
@@ -7,9 +7,11 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
 import {SearchService} from '../../services/search.service';
-import {Search} from '../../models/search.model';
+import {Search, SearchQuery} from '../../models/search.model';
 import {isDateToday} from '../../utils/date.utils';
+import {tap} from 'rxjs';
 
 /** Custom error state matcher that prevents form fields from displaying error borders while typing. */
 class NeverErrorStateMatcher implements ErrorStateMatcher {
@@ -33,15 +35,15 @@ class NeverErrorStateMatcher implements ErrorStateMatcher {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     FormsModule
   ],
   templateUrl: './search-history.component.html',
   styleUrl: './search-history.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchHistoryComponent implements OnInit {
+export class SearchHistoryComponent {
   private readonly searchService = inject(SearchService);
-  private readonly destroyRef = inject(DestroyRef);
 
   /** Utility function to check if a date falls on the current calendar day. */
   protected readonly isDateToday = isDateToday;
@@ -62,22 +64,42 @@ export class SearchHistoryComponent implements OnInit {
 
   /** Computed signal filtering the search history based on the active query input. */
   protected readonly filteredHistory = computed(() => {
-    const filter = this.queryFilter().trim().toLowerCase();
-    const history = this.searchService.history();
-    if (!filter) {
-      return history;
-    }
-    return history.filter((item) => item.query.toLowerCase().includes(filter));
+    return this.searchService.getFilteredHistory(this.queryFilter());
   });
 
-  /** Initializes component and triggers initial search history loading from the backend. */
-  ngOnInit(): void {
-    this.searchService.loadHistory()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (err) => console.error('Error loading history:', err),
-      });
-  }
+  /** Loads initial search history and exposes the request state through a resource. */
+  protected readonly historyResource = rxResource({
+    params: () => true,
+    stream: () => this.searchService.loadHistory(),
+    defaultValue: false,
+  });
+
+  private readonly saveRequest = signal<SearchQuery | undefined>(undefined);
+  private readonly updateRequest = signal<{search: Search} | undefined>(undefined);
+
+  /** Saves a new search and exposes its request state. */
+  protected readonly saveResource = rxResource({
+    params: () => this.saveRequest(),
+    stream: ({params}) => this.searchService.saveSearch(params).pipe(
+      tap((saved) => {
+        if (saved) {
+          this.queryControl.reset();
+        }
+      })
+    ),
+  });
+
+  /** Updates a selected search and exposes its request state. */
+  protected readonly updateResource = rxResource({
+    params: () => this.updateRequest(),
+    stream: ({params}) => this.searchService.updateSearch(params.search),
+  });
+
+  /** Indicates that a save or history update is still in progress. */
+  protected readonly isActionPending = computed(() => {
+    return this.saveResource.isLoading()
+      || this.updateResource.isLoading();
+  });
 
   /** Clears the current search input text. */
   protected onClear(): void {
@@ -86,15 +108,10 @@ export class SearchHistoryComponent implements OnInit {
 
   /** Submits a new search query if the input is valid, and resets the input field upon completion. */
   protected onSearch(): void {
-    if (this.queryControl.invalid) {
+    if (this.queryControl.invalid || this.isActionPending()) {
       return;
     }
-    this.searchService.saveSearch({query: this.queryControl.value})
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => this.queryControl.reset(),
-        error: (err) => console.error('Error saving search:', err),
-      });
+    this.saveRequest.set({query: this.queryControl.value});
   }
 
   /**
@@ -103,10 +120,9 @@ export class SearchHistoryComponent implements OnInit {
    * @param item The selected search history record.
    */
   protected onSelect(item: Search): void {
-    this.searchService.updateSearch(item)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (err) => console.error('Error updating search:', err),
-      });
+    if (this.isActionPending()) {
+      return;
+    }
+    this.updateRequest.set({search: item});
   }
 }
